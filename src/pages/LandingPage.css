@@ -1,0 +1,141 @@
+@keyframes smokeAnimation {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+.landing-page {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  background-color: #000;
+  color: white;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+}
+
+.left-pane {
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+}
+
+.credit {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  font-size: 12px;
+  color: #555;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.credit a {
+  color: inherit;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.logo-background {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 140vh;
+  font-weight: bold;
+  color: #1a1a1a;
+  position: absolute;
+  left: -45vh;
+  line-height: 1;
+  user-select: none;
+}
+
+.right-pane {
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  text-decoration: none;
+  padding-left: 10vw;
+}
+
+.light-source {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  transform: none;
+  background: linear-gradient(to left, rgba(69, 90, 100, 0.2) 0%, rgba(0,0,0,0) 50%);
+  pointer-events: none;
+  transition: background 0.5s ease-out;
+  overflow: hidden;
+}
+
+.trade-button:hover ~ .light-source {
+  background: linear-gradient(to left, rgba(46, 189, 133, 0.5) 0%, rgba(0,0,0,0) 60%);
+}
+
+.smoke-effect {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 200%;
+  background-image: url('../assets/images/noise.png');
+  background-repeat: repeat;
+  mix-blend-mode: screen;
+  opacity: 0;
+  animation: smokeAnimation 10s linear infinite;
+  transition: opacity 0.5s ease-out;
+  -webkit-mask-image: linear-gradient(to left, #000 0%, transparent 60%);
+  mask-image: linear-gradient(to left, #000 0%, transparent 60%);
+}
+
+.trade-button:hover ~ .light-source .smoke-effect {
+  opacity: 0.15;
+}
+
+.trade-button {
+  color: #444;
+  text-decoration: none !important;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  writing-mode: vertical-rl;
+  text-transform: uppercase;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 18vh;
+  letter-spacing: 1vh;
+  transition: letter-spacing 0.3s ease, color 0.3s ease;
+}
+
+.trade-button:hover {
+  letter-spacing: 2vh;
+  color: #ccc;
+}
+
+.trade-button .arrow {
+  color: white;
+  opacity: 0;
+  transform: translateX(-40px);
+  transition: opacity 0.3s ease, transform 0.4s ease-out;
+  margin-top: 20px;
+  font-size: 18vh;
+}
+
+.trade-button:hover .arrow {
+  opacity: 1;
+  transform: translateX(0);
+} 

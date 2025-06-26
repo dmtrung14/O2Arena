@@ -1,0 +1,110 @@
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #1A1C20;
+  border: 1px solid #2A2E39;
+  border-radius: 8px;
+  padding: 20px;
+  width: 400px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #2A2E39;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #848E9C;
+  cursor: pointer;
+}
+
+.modal-body p {
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0 0 15px 0;
+}
+
+.warning-text {
+  color: #F6465D;
+  font-weight: 500;
+}
+
+.leverage-slider-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.leverage-modal-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(to right, #2EBD85 var(--slider-progress), #45484F var(--slider-progress));
+  outline: none;
+  padding: 0;
+  margin: 0;
+}
+
+.leverage-modal-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #1A1C20;
+  border: 4px solid #2EBD85;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.leverage-display-box {
+  background-color: #0d0e10;
+  border: 1px solid #45484F;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.change-leverage-btn {
+  background-color: #2EBD85;
+  border: none;
+  color: #fff;
+  padding: 12px;
+  width: 100%;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 25px;
+  transition: background-color 0.2s;
+}
+
+.change-leverage-btn:hover {
+  background-color: #25a071;
+} 

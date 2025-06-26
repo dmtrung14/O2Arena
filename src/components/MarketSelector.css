@@ -1,0 +1,180 @@
+.market-selector-container {
+    position: relative;
+    color: #fff;
+    border-bottom: 1px solid #2a2e39;
+    font-family: 'Open Sans', sans-serif;
+    background-color: #000;
+    width: 100%;
+}
+
+.market-selector-header {
+    display: flex;
+    align-items: stretch;
+    padding: 0 15px;
+    background-color: #0D0E12;
+    border-bottom: 1px solid #2a2e39;
+}
+
+.market-identity {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding-right: 20px;
+    border-right: 1px solid #2a2e39;
+}
+
+.market-metrics {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    padding-left: 15px;
+    gap: 20px;
+}
+
+.metric-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px 0;
+}
+
+.metric-label {
+    font-size: 11px;
+    color: #888;
+    margin-top: 4px;
+}
+
+.metric-value {
+    font-size: 13px;
+    font-weight: 500;
+    color: #fff;
+    display: flex;
+    align-items: center;
+}
+
+.metric-value.green, .green {
+    color: #2EBD85;
+}
+
+.metric-value.red, .red {
+    color: #F6465D;
+}
+
+.countdown {
+    color: #888;
+    margin-left: 5px;
+}
+
+.bid-ask-ratio-bar {
+    width: 80px;
+    height: 6px;
+    background-color: #f6465d4d;
+    margin: 0 8px;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.bid-ratio-fill {
+    height: 100%;
+    background-color: #2EBD85;
+}
+
+.hamburger-icon {
+    width: 18px;
+    height: 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+    margin-right: 15px;
+}
+
+.hamburger-icon div {
+    width: 100%;
+    height: 2px;
+    background-color: #d1d4dc;
+}
+
+.market-logo {
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+}
+
+.market-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.market-dropdown {
+    position: absolute;
+    top: calc(100% + 1px);
+    left: 0;
+    width: 400px;
+    background-color: #1e222d;
+    border: 1px solid #2a2e39;
+    z-index: 1000;
+    color: #fff;
+    border-radius: 4px;
+}
+
+.search-bar {
+    padding: 15px;
+    border-bottom: 1px solid #2a2e39;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 10px 15px;
+    background-color: #131722;
+    border: 1px solid #2a2e39;
+    border-radius: 4px;
+    color: #fff;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+.search-bar input::placeholder {
+    color: #888;
+}
+
+.market-tabs {
+    display: flex;
+    padding: 10px 15px;
+    border-bottom: 1px solid #2a2e39;
+}
+
+.market-tabs span {
+    margin-right: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #888;
+}
+
+.market-tabs span:first-child {
+    color: #f0b90b;
+    border-bottom: 2px solid #f0b90b;
+    padding-bottom: 8px;
+}
+
+.market-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.market-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.market-item:hover {
+    background-color: #2a2e39;
+}
+
+.market-name-dropdown {
+    font-size: 16px;
+} 

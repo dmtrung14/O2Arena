@@ -1,0 +1,320 @@
+.trade-form-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 10px;
+  background: #000000;
+  border: 1px solid #2A2E39;
+  border-radius: 8px;
+}
+
+.order-type-tabs {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.order-type-tabs button {
+  flex: 1;
+  background: none;
+  border: none;
+  color: #848E9C;
+  padding: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+
+.order-type-tabs button.active {
+  color: #fff;
+  font-weight: 600;
+  border-bottom: 2px solid #2EBD85;
+}
+
+.direction-leverage-tabs {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.direction-tabs {
+  display: flex;
+  flex-grow: 1;
+}
+
+.leverage-btn {
+  background-color: #1A1C20;
+  border: 1px solid #2EBD85;
+  color: #2EBD85;
+  padding: 10px 15px;
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.direction-tabs button {
+  flex: 1;
+  border: 1px solid #45484F;
+  background-color: #1A1C20;
+  color: #fff;
+  padding: 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.direction-tabs .buy-btn { border-radius: 4px 0 0 4px; }
+.direction-tabs .sell-btn { border-radius: 0 4px 4px 0; }
+
+.direction-tabs .buy-btn.active { background-color: #2EBD85; border-color: #2EBD85; }
+.direction-tabs .sell-btn.active { background-color: #F6465D; border-color: #F6465D; }
+
+.form-body { display: flex; flex-direction: column; gap: 12px; }
+
+.form-row { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #848E9C; }
+
+.input-row {
+  display: flex;
+  align-items: center;
+}
+
+.amount-input-wrapper {
+  display: flex;
+  align-items: center;
+  background-color: #1A1C20;
+  border: 1px solid #45484F;
+  border-radius: 4px;
+  width: 65%;
+  transition: border-color 0.2s;
+  padding: 0 8px;
+}
+
+.amount-input-wrapper:focus-within {
+  border-color: #2EBD85;
+}
+
+.amount-input-wrapper input {
+  background: none;
+  border: none;
+  color: #fff;
+  padding: 8px 0;
+  text-align: left;
+  outline: none;
+  flex-grow: 1;
+  width: 100%;
+}
+
+.amount-input-wrapper .input-adornment { 
+  color: #848E9C; 
+  white-space: nowrap;
+  padding-left: 0px;
+  transition: color 0.2s;
+}
+
+.amount-input-wrapper:focus-within .input-adornment {
+  color: #2EBD85;
+}
+
+.amount-input-wrapper .currency { color: #848E9C}
+
+.slider-row { 
+  align-items: center;
+  gap: 10px; 
+}
+
+.slider-input {
+  width: 20%;
+  min-width: 0;
+  padding: 0;
+}
+
+.slider-percentage-input {
+  width: 100%;
+  text-align: right !important;
+  padding: 8px !important;
+  -moz-appearance: textfield;
+}
+
+.slider-percentage-input::-webkit-outer-spin-button,
+.slider-percentage-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.slider-container { 
+  position: relative; 
+  flex-grow: 1; 
+  display: flex;
+  align-items: center;
+}
+
+.leverage-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(to right, #2EBD85 var(--slider-progress), #45484F var(--slider-progress));
+  outline: none;
+  padding: 0;
+  margin: 0;
+  position: relative;
+  z-index: 2;
+}
+
+.leverage-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #000;
+  border: 3px solid #2EBD85;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.slider-ticks {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.slider-ticks span {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid #45484F;
+  transform: translateY(-50%);
+  background-color: #000;
+}
+
+.slider-marker {
+  position: absolute;
+  top: 50%;
+  left: 60%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  background: #1A1C20;
+  border: 1px solid #848E9C;
+}
+
+.custom-dropdown-container {
+  position: relative;
+}
+
+.custom-dropdown-header {
+  background-color: #1A1C20;
+  border: 1px solid #45484F;
+  border-radius: 4px;
+  padding: 10px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.arrow-down-icon::after {
+  content: '▼';
+  font-size: 10px;
+  color: #848E9C;
+  transform: scaleY(0.8);
+  display: inline-block;
+  transition: transform 0.2s;
+}
+
+.arrow-down-icon.open::after { transform: scaleY(0.8) rotate(180deg); }
+
+.custom-dropdown-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: #1A1C20;
+  border: 1px solid #45484F;
+  border-radius: 4px;
+  list-style: none;
+  padding: 5px;
+  margin-top: 5px;
+  z-index: 10;
+}
+
+.custom-dropdown-list li {
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.custom-dropdown-list li:hover { background-color: #2A2E39; }
+.custom-dropdown-list li.active { background-color: #2EBD85; }
+
+.checkmark-icon {
+  visibility: hidden;
+}
+
+.custom-dropdown-list li.active .checkmark-icon {
+  visibility: visible;
+}
+
+.checkbox-row { justify-content: flex-start; gap: 20px; }
+
+.custom-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.custom-checkbox input[type="checkbox"] { display: none; }
+
+.custom-checkbox .checkmark {
+  width: 16px;
+  height: 16px;
+  border: 1px solid #45484F;
+  border-radius: 4px;
+  display: inline-block;
+  position: relative;
+}
+
+.custom-checkbox input:checked + .checkmark {
+  background-color: #2EBD85;
+  border-color: #2EBD85;
+}
+
+.custom-checkbox input:checked + .checkmark::after {
+  content: '✓';
+  position: absolute;
+  color: #000;
+  font-size: 14px;
+  top: -2px;
+  left: 2px;
+}
+
+.info-row { border-top: 1px dashed #2A2E39; padding-top: 12px; }
+
+.input-row input {
+  padding: 0;
+  width: auto;
+}
+
+.connect-wallet-form-btn {
+  background-color: #1A1C20;
+  border: 1px solid #2EBD85;
+  color: #2EBD85;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 5px;
+} 

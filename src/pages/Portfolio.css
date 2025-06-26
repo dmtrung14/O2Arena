@@ -1,0 +1,212 @@
+/* General Portfolio Page Styles */
+.portfolio-page {
+  width: 100%;
+  padding: 20px;
+  height: 100%;
+}
+
+body {
+    background-color: #000000;
+    background-image: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.02) 1px, transparent 1px, transparent 20px);
+}
+
+.portfolio-header {
+  margin-bottom: 20px;
+}
+
+.search-account-container {
+  position: relative;
+  width: 300px;
+  background-color: #1c2128;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  padding: 5px 10px;
+  transition: border-color 0.2s ease-in-out;
+}
+
+.search-account-container.focused {
+  border-color: #2EBD85;
+}
+
+.search-icon::before {
+  content: '⚲';
+  font-size: 18px;
+  margin-right: 8px;
+  color: #8b949e;
+}
+
+.search-account-container input {
+  background: none;
+  border: none;
+  color: #c9d1d9;
+  font-size: 14px;
+  width: 100%;
+  padding: 5px;
+  outline: none;
+}
+
+.portfolio-main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Panel Styles */
+.panel {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  border-bottom: 1px solid #30363d;
+}
+
+/* Sections */
+.top-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  height: 50px;
+}
+
+.top-box {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+}
+
+.middle-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  height: 300px;
+}
+
+.bottom-section {
+  height: 200px;
+}
+
+/* Tabs */
+.tabs button {
+  background: none;
+  border: none;
+  color: #8b949e;
+  padding: 5px 10px;
+  margin-right: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  border-bottom: 2px solid transparent;
+}
+
+.tabs button.active {
+  color: #2EBD85;
+  border-bottom: 2px solid #2EBD85;
+}
+
+/* Dropdown */
+.dropdown {
+  display: flex;
+  align-items: center;
+  color: #c9d1d9;
+  font-size: 14px;
+}
+
+/* Placeholder */
+.connect-wallet-placeholder {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.connect-wallet-placeholder p {
+  color: #2EBD85;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.info-icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.info-icon {
+  display: block;
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid #8b949e;
+  border-radius: 50%;
+  color: #8b949e;
+  text-align: center;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 12px;
+  line-height: 15px;
+  cursor: pointer;
+}
+
+.info-tooltip {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 10px;
+  width: 300px;
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 15px;
+  z-index: 10;
+  color: #c9d1d9;
+  text-align: left;
+}
+
+.info-icon-wrapper:hover .info-tooltip {
+  display: block;
+}
+
+.tooltip-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 10px 0;
+}
+
+.info-tooltip ul {
+  list-style: none;
+  padding: 10px 0 0 0;
+  margin: 0 0 10px 0;
+  border-top: 1px solid #30363d;
+}
+
+.info-tooltip li {
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: #8b949e;
+}
+
+.prefix-key {
+  display: inline-block;
+  background-color: #30363d;
+  border-radius: 4px;
+  padding: 2px 6px;
+  margin-right: 8px;
+  font-family: monospace;
+}
+
+.tooltip-footer {
+  font-size: 12px;
+  color: #8b949e;
+  margin: 0;
+  border-top: 1px solid #30363d;
+  padding-top: 10px;
+} 

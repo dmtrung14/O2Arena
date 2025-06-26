@@ -1,0 +1,48 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #000000;
+  color: #D1D4DC;
+  font-family: 'Open Sans', 'Google Sans', sans-serif;
+  font-size: 12px;
+  margin: 0;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.main-content {
+  display: flex;
+  justify-content: flex-end;
+  padding: 20px;
+  flex-grow: 1;
+}
+
+.trade-layout-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px 320px;
+  width: 100%;
+  gap: 20px;
+  height: 85vh;
+  align-items: stretch;
+}
+
+.chart-container {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  height: 100%;
+  border: 1px solid #2A2E39;
+  border-radius: 8px;
+  overflow: hidden;
+}
