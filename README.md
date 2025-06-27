@@ -1,3 +1,5 @@
+<img src="./public/banner.png" alt="Logo"/>
+
 # O2 Arena - Crypto Trading Sandbox
 
 O2 Arena is a sophisticated crypto trading sandbox designed for developing and testing trading strategies in a simulated, real-time environment. It provides a feature-rich interface that mirrors professional trading platforms, powered by live market data.
