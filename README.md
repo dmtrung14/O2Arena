@@ -1,4 +1,4 @@
-<img src="./public/banner.png" alt="Logo"/>
+<img src="./public/banner.png" style="width:100%" alt="Logo"/>
 
 # O2 Arena - Crypto Trading Sandbox
 
