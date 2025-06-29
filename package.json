@@ -24,6 +24,8 @@
     "start": "concurrently \"npm:start:react\" \"npm:start:proxy\"",
     "start:react": "react-scripts start",
     "start:proxy": "node proxy-server.js",
+    "dev": "react-scripts start",
+    "vercel:dev": "vercel dev",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -45,5 +47,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "http-proxy-middleware": "^3.0.0",
+    "vercel": "^34.2.0"
   }
 }

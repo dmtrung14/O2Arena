@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './TradeForm.css';
 import LeverageModal from './LeverageModal';
+import AuthModal from './AuthModal';
 
 const advancedOrderTypes = ['None', 'Immediate or Cancel', 'Fill or Kill'];
 
@@ -9,6 +10,7 @@ function TradeForm({ selectedMarket }) {
   const [direction, setDirection] = useState('buy');
   const [leverage, setLeverage] = useState(10);
   const [isLeverageModalOpen, setIsLeverageModalOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [sliderValue, setSliderValue] = useState(0);
   const [advancedOrderType, setAdvancedOrderType] = useState('None');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -47,8 +49,17 @@ function TradeForm({ selectedMarket }) {
     });
   };
 
+  const handleSignInClick = () => {
+    setIsAuthModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsAuthModalOpen(false);
+  };
+
   return (
-    <div className="trade-form-panel">
+    <>
+      <div className="trade-form-panel">
         <div className="order-type-tabs">
           <button className={orderType === 'market' ? 'active' : ''} onClick={() => setOrderType('market')}>Market</button>
           <button className={orderType === 'limit' ? 'active' : ''} onClick={() => setOrderType('limit')}>Limit</button>
@@ -189,7 +200,7 @@ function TradeForm({ selectedMarket }) {
             <span>N/A</span>
           </div>
 
-          <button className="connect-wallet-form-btn">Connect Wallet</button>
+          <button className="connect-wallet-form-btn" onClick={handleSignInClick}>Sign In</button>
         </div>
         <LeverageModal 
           isOpen={isLeverageModalOpen}
@@ -198,7 +209,9 @@ function TradeForm({ selectedMarket }) {
           setLeverage={setLeverage}
           selectedMarket={selectedMarket}
         />
-    </div>
+      </div>
+      {isAuthModalOpen && <AuthModal onClose={handleCloseModal} />}
+    </>
   );
 }
 

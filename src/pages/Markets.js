@@ -94,19 +94,20 @@ const Markets = () => {
 
     const fetchMarketData = useCallback(async (market, range) => {
         try {
+            const API_BASE_URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:3001';
             const period2 = Math.floor(new Date().getTime() / 1000);
 
             // Chart data fetch setup
             const startDate = getStartDate(range);
             const period1 = Math.floor(startDate.getTime() / 1000);
             const interval = getInterval(range);
-            const chartUrl = `http://localhost:3001/api/v8/finance/chart/${market.apiSymbol}?period1=${period1}&period2=${period2}&interval=${interval}`;
+            const chartUrl = `${API_BASE_URL}/api/v8/finance/chart/${market.apiSymbol}?period1=${period1}&period2=${period2}&interval=${interval}`;
             
             // Volume data fetch setup
             const volumeStartDate = new Date();
             volumeStartDate.setDate(volumeStartDate.getDate() - 2); // Get last 2 days to be safe
             const volumePeriod1 = Math.floor(volumeStartDate.getTime() / 1000);
-            const volumeUrl = `http://localhost:3001/api/v8/finance/chart/${market.apiSymbol}?period1=${volumePeriod1}&period2=${period2}&interval=1d`;
+            const volumeUrl = `${API_BASE_URL}/api/v8/finance/chart/${market.apiSymbol}?period1=${volumePeriod1}&period2=${period2}&interval=1d`;
 
             const [chartResponse, volumeResponse] = await Promise.all([
                 fetch(chartUrl),

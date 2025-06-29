@@ -1,0 +1,96 @@
+.auth-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.auth-modal-content {
+    background: #1C1C1E;
+    color: white;
+    padding: 30px;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 420px;
+    position: relative;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    border: 1px solid #333;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.auth-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.auth-modal-header h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.auth-modal-close-btn {
+    background: transparent;
+    border: none;
+    color: #8A8A8E;
+    font-size: 28px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+}
+
+.auth-modal-body .auth-option-btn {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 15px;
+    border: 1px solid #3A3A3C;
+    border-radius: 12px;
+    background-color: #2C2C2E;
+    color: white;
+    font-size: 17px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: left;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.auth-modal-body .auth-option-btn:hover {
+    background-color: #3A3A3C;
+    border-color: #555;
+}
+
+.auth-modal-body .auth-option-btn:last-child {
+    margin-bottom: 0;
+}
+
+.auth-option-btn-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 15px;
+}
+
+.auth-modal-footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+    color: #8A8A8E;
+}
+
+.auth-modal-footer a {
+    color: #0A84FF;
+    text-decoration: none;
+}
+
+.auth-modal-footer a:hover {
+    text-decoration: underline;
+} 
