@@ -14,7 +14,6 @@ const techCompanyLogos = [
   { src: '/airbnb.svg', name: 'Airbnb' },
   { src: '/uber.svg', name: 'Uber' },
   { src: '/tesla.svg', name: 'Tesla' },
-  { src: '/stripe.svg', name: 'Stripe' },
 ];
 
 const startupLogos = [
@@ -22,7 +21,6 @@ const startupLogos = [
   { src: '/palantir.svg', name: 'Palantir' },
   { src: '/snowflake.svg', name: 'Snowflake' },
   { src: '/robinhood.svg', name: 'Robinhood' },
-  { src: '/databricks.svg', name: 'Databricks' },
 ];
 
 // Duplicate logos to ensure seamless looping
