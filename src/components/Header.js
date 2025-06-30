@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink, Link, useNavigate } from 'react-router-dom';
 import './Header.css';
 import AuthModal from './AuthModal';
+import { useAuth } from '../App';
+import { auth } from '../firebase';
 
 function Header() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   const handleSignInClick = () => {
     setIsAuthModalOpen(true);
@@ -13,6 +18,25 @@ function Header() {
   const handleCloseModal = () => {
     setIsAuthModalOpen(false);
   };
+
+  const handleLogout = async () => {
+    await auth.signOut();
+    navigate('/');
+    setIsProfileMenuOpen(false);
+  };
+
+  const UserProfile = () => (
+    <div className="user-profile" onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}>
+        <span className="user-nickname">{user.nickname}</span>
+        <img src={user.photoURL} alt="User" className="user-avatar" />
+        {isProfileMenuOpen && (
+            <div className="profile-dropdown">
+                <Link to="/profile" className="dropdown-item">Profile</Link>
+                <div className="dropdown-item" onClick={handleLogout}>Log Out</div>
+            </div>
+        )}
+    </div>
+  );
 
   return (
     <>
@@ -28,10 +52,14 @@ function Header() {
           </nav>
         </div>
         <div className="header-right">
-          <button className="connect-wallet-btn" onClick={handleSignInClick}>Sign In</button>
+            {user ? (
+                <UserProfile />
+            ) : (
+                <button className="connect-wallet-btn" onClick={handleSignInClick}>Sign In</button>
+            )}
         </div>
       </header>
-      {isAuthModalOpen && <AuthModal onClose={handleCloseModal} />}
+      {isAuthModalOpen && !user && <AuthModal onClose={handleCloseModal} />}
     </>
   );
 }

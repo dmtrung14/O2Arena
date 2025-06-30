@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import './TradeForm.css';
 import LeverageModal from './LeverageModal';
 import AuthModal from './AuthModal';
+import { useAuth } from '../App';
 
 const advancedOrderTypes = ['None', 'Immediate or Cancel', 'Fill or Kill'];
 
 function TradeForm({ selectedMarket }) {
+  const { user } = useAuth();
   const [orderType, setOrderType] = useState('limit');
   const [direction, setDirection] = useState('buy');
   const [leverage, setLeverage] = useState(10);
@@ -55,6 +57,10 @@ function TradeForm({ selectedMarket }) {
 
   const handleCloseModal = () => {
     setIsAuthModalOpen(false);
+  };
+
+  const handleTrade = () => {
+    console.log('Trade executed');
   };
 
   return (
@@ -200,7 +206,13 @@ function TradeForm({ selectedMarket }) {
             <span>N/A</span>
           </div>
 
-          <button className="connect-wallet-form-btn" onClick={handleSignInClick}>Sign In</button>
+          {user ? (
+            <button className="connect-wallet-form-btn" onClick={handleTrade}>
+              {direction === 'buy' ? 'Buy' : 'Sell'}
+            </button>
+          ) : (
+            <button className="connect-wallet-form-btn" onClick={handleSignInClick}>Sign In</button>
+          )}
         </div>
         <LeverageModal 
           isOpen={isLeverageModalOpen}

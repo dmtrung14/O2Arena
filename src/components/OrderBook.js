@@ -10,53 +10,49 @@ function OrderBook({ selectedMarket }) {
   const asksContainerRef = useRef(null);
 
   useEffect(() => {
-    const fetchOrderBook = async () => {
-      try {
-        const response = await fetch(`https://zo-devnet.n1.xyz/orderbook?market_id=${selectedMarket.marketId}`);
-        const data = await response.json();
-        
-        const lowestAsks = data.asks.sort((a, b) => a[0] - b[0]);
-        const highestBids = data.bids.sort((a, b) => b[0] - a[0]);
+    let ws;
 
-        const asksWithLog = lowestAsks.map(a => ({ price: a[0], size: a[1], logTotal: Math.log2((a[0] * a[1]) + 1) }));
-        const bidsWithLog = highestBids.map(b => ({ price: b[0], size: b[1], logTotal: Math.log2((b[0] * b[1]) + 1) }));
+    const handleSnapshot = (data) => {
+      const lowestAsks = [...data.asks].sort((a, b) => a[0] - b[0]);
+      const highestBids = [...data.bids].sort((a, b) => b[0] - a[0]);
 
-        const maxLog = Math.max(...asksWithLog.map(a => a.logTotal), ...bidsWithLog.map(b => b.logTotal));
-        setMaxLogTotal(maxLog > 0 ? maxLog : 1);
+      const asksWithLog = lowestAsks.map((a) => ({ price: a[0], size: a[1], logTotal: Math.log2((a[0] * a[1]) + 1) }));
+      const bidsWithLog = highestBids.map((b) => ({ price: b[0], size: b[1], logTotal: Math.log2((b[0] * b[1]) + 1) }));
 
-        setOrderBook({ asks: [...asksWithLog].reverse(), bids: bidsWithLog });
+      const maxLog = Math.max(...asksWithLog.map((a) => a.logTotal), ...bidsWithLog.map((b) => b.logTotal));
+      setMaxLogTotal(maxLog > 0 ? maxLog : 1);
 
-        if (lowestAsks.length > 0 && highestBids.length > 0) {
-          const lowestAskPrice = lowestAsks[0][0];
-          const highestBidPrice = highestBids[0][0];
-          const newSpread = lowestAskPrice - highestBidPrice;
-          const newSpreadPercentage = highestBidPrice > 0 ? (newSpread / highestBidPrice) * 100 : 0;
-          setSpread({ value: newSpread, percentage: newSpreadPercentage });
+      setOrderBook({ asks: [...asksWithLog].reverse(), bids: bidsWithLog });
+
+      if (lowestAsks.length > 0 && highestBids.length > 0) {
+        const lowestAskPrice = lowestAsks[0][0];
+        const highestBidPrice = highestBids[0][0];
+        const newSpread = lowestAskPrice - highestBidPrice;
+        const newSpreadPercentage = highestBidPrice > 0 ? (newSpread / highestBidPrice) * 100 : 0;
+        setSpread({ value: newSpread, percentage: newSpreadPercentage });
+      }
+    };
+
+    const connectWs = () => {
+      const url = `${window.location.origin.replace(/^http/, 'ws')}/ws/depth`;
+      ws = new WebSocket(url);
+      ws.onmessage = (evt) => {
+        try {
+          const msg = JSON.parse(evt.data);
+          if (msg.type === 'depth') handleSnapshot(msg.data);
+        } catch (err) {
+          console.error('WS parse error', err);
         }
-      } catch (error) {
-        console.error('Error fetching order book:', error);
-      }
+      };
+      ws.onclose = () => {
+        setTimeout(connectWs, 3000);
+      };
     };
 
-    const fetchTrades = async () => {
-      try {
-        const response = await fetch('https://zo-devnet.n1.xyz/trades');
-        const data = await response.json();
-        const filteredTrades = data.trades.filter(trade => trade.marketId === selectedMarket.marketId);
-        setTrades(filteredTrades);
-      } catch (error) {
-        console.error('Error fetching trades:', error);
-      }
-    };
-
-    fetchOrderBook();
-    fetchTrades();
-    const orderBookInterval = setInterval(fetchOrderBook, 1000);
-    const tradesInterval = setInterval(fetchTrades, 1000);
+    connectWs();
 
     return () => {
-      clearInterval(orderBookInterval);
-      clearInterval(tradesInterval);
+      if (ws) ws.close();
     };
   }, [selectedMarket]);
 

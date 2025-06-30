@@ -125,13 +125,13 @@
 .slider-input {
   width: 20%;
   min-width: 0;
-  padding: 0;
+  padding: 0 8px;
 }
 
 .slider-percentage-input {
   width: 100%;
   text-align: right !important;
-  padding: 8px !important;
+  padding: 8px 4px !important;
   -moz-appearance: textfield;
 }
 

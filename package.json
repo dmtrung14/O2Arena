@@ -18,12 +18,21 @@
     "react-router-dom": "^7.6.2",
     "react-scripts": "5.0.1",
     "recharts": "^3.0.0",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "nodejs-order-book": "^9.1.0",
+    "ws": "^8.14.0",
+    "uuid": "^9.0.1",
+    "dotenv": "^16.3.1",
+    "decimal.js": "^10.4.3",
+    "body-parser": "^1.20.2",
+    "pg": "^8.11.3"
   },
   "scripts": {
     "start": "concurrently \"npm:start:react\" \"npm:start:proxy\"",
     "start:react": "react-scripts start",
     "start:proxy": "node proxy-server.js",
+    "start:server": "node server/index.js",
+    "start:all": "concurrently \"npm run start:server\" \"npm run start:react\"",
     "dev": "react-scripts start",
     "vercel:dev": "vercel dev",
     "build": "react-scripts build",

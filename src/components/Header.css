@@ -63,6 +63,49 @@
 }
 
 .connect-wallet-btn:hover {
-  background-color: #2EBD85;
-  color: #000000;
+  background-color: #5a5ac8;
+}
+
+.user-profile {
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.user-nickname {
+  color: #D1D4DC;
+  font-size: 18px; /* Bigger font */
+  margin-right: 15px; /* Space between name and avatar */
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #4a4a7c;
+}
+
+.profile-dropdown {
+  position: absolute;
+  top: 55px;
+  right: 0;
+  background-color: #1a1a36;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  width: 160px;
+  overflow: hidden;
+  z-index: 1000;
+}
+
+.dropdown-item {
+  padding: 12px 20px;
+  color: #fff;
+  display: block;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.dropdown-item:hover {
+  background-color: #2a2a50;
 }

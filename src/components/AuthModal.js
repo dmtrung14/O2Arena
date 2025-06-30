@@ -1,16 +1,45 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FaGoogle, FaMicrosoft, FaGithub } from 'react-icons/fa';
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { doc, getDoc, setDoc } from "firebase/firestore"; 
+import { auth, db } from '../firebase';
 import './AuthModal.css';
 
-// TODO: Please add actual icon assets for these.
-const googleIcon = '/google-icon.svg';
-const microsoftIcon = '/microsoft-icon.svg';
-const githubIcon = '/github-icon.svg';
-
 function AuthModal({ onClose }) {
-  const handleGoogleSignIn = () => {
-    console.log('Attempting to sign in with Google...');
-    // Future implementation of Google Sign-In
+  const navigate = useNavigate();
+
+  const handleGoogleSignIn = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      // Check if user exists in Firestore
+      const userDocRef = doc(db, "users", user.uid);
+      const userDoc = await getDoc(userDocRef);
+
+      if (userDoc.exists()) {
+        // User exists, redirect to trade page
+        navigate('/trade');
+      } else {
+        // New user, create a document and redirect to profile page for more details
+        await setDoc(userDocRef, {
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          photoURL: `https://api.dicebear.com/8.x/adventurer/svg?seed=${user.uid}`, // Using DiceBear for avatar
+          createdAt: new Date(),
+          legalName: 'Account Name',
+          nickname: user.email.split('@')[0]
+        });
+        navigate('/profile');
+      }
+      onClose(); // Close the modal on successful sign-in
+    } catch (error) {
+      console.error("Error during Google sign-in:", error);
+      // Handle errors here, such as displaying a notification to the user
+    }
   };
 
   const handleMicrosoftSignIn = () => {

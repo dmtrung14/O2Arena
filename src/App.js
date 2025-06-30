@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import React, { useState, useEffect, createContext, useContext } from 'react';
+import { BrowserRouter as Router, Route, Routes, useLocation, Navigate } from 'react-router-dom';
 import './App.css';
 import Header from './components/Header';
 import MarketSelector from './components/MarketSelector';
@@ -9,6 +9,43 @@ import TradeForm from './components/TradeForm';
 import Portfolio from './pages/Portfolio';
 import Markets from './pages/Markets';
 import LandingPage from './pages/LandingPage';
+import ProfilePage from './pages/Profile';
+import { auth, db } from './firebase';
+import { doc, getDoc } from 'firebase/firestore';
+
+const AuthContext = createContext();
+
+export const useAuth = () => useContext(AuthContext);
+
+const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
+      if (firebaseUser) {
+        const userDocRef = doc(db, 'users', firebaseUser.uid);
+        const userDoc = await getDoc(userDocRef);
+        if (userDoc.exists()) {
+          setUser({ ...firebaseUser, ...userDoc.data() });
+        } else {
+          setUser(firebaseUser); // User exists in auth but not yet in firestore
+        }
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  return (
+    <AuthContext.Provider value={{ user, loading }}>
+      {!loading && children}
+    </AuthContext.Provider>
+  );
+};
 
 const markets = [
   { name: 'BTC-USDC', logo: '/bitcoin.svg', marketId: 4, symbol: 'BINANCE:BTCUSDT' },
@@ -77,45 +114,68 @@ function App() {
 
   return (
     <Router>
-      <PageTitleManager selectedMarket={selectedMarket} />
-      <div className="app">
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/trade" element={
-            <>
-              <Header />
-              <main className="main-content">
-                <div className="trade-layout-grid">
-                  <div className="chart-container">
-                    <MarketSelector
-                      markets={markets}
-                      selectedMarket={selectedMarket}
-                      onMarketChange={setSelectedMarket}
-                    />
-                    <Chart selectedMarket={selectedMarket} />
+      <AuthProvider>
+        <PageTitleManager selectedMarket={selectedMarket} />
+        <div className="app">
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/trade" element={
+              <>
+                <Header />
+                <main className="main-content">
+                  <div className="trade-layout-grid">
+                    <div className="chart-container">
+                      <MarketSelector
+                        markets={markets}
+                        selectedMarket={selectedMarket}
+                        onMarketChange={setSelectedMarket}
+                      />
+                      <Chart selectedMarket={selectedMarket} />
+                    </div>
+                    <OrderBook selectedMarket={selectedMarket} />
+                    <TradeForm selectedMarket={selectedMarket} />
                   </div>
-                  <OrderBook selectedMarket={selectedMarket} />
-                  <TradeForm selectedMarket={selectedMarket} />
-                </div>
-              </main>
-            </>
-          } />
-          <Route path="/portfolio" element={
-            <>
-              <Header />
-              <Portfolio />
-            </>
-          } />
-          <Route path="/markets" element={
-            <>
-              <Header />
-              <Markets />
-            </>
-          } />
-        </Routes>
-      </div>
+                </main>
+              </>
+            } />
+            <Route path="/portfolio" element={
+              <>
+                <Header />
+                <Portfolio />
+              </>
+            } />
+            <Route path="/markets" element={
+              <>
+                <Header />
+                <Markets />
+              </>
+            } />
+            <Route path="/profile" element={
+                <ProtectedRoute>
+                    <Header />
+                    <ProfilePage />
+                </ProtectedRoute>
+            } />
+          </Routes>
+        </div>
+      </AuthProvider>
     </Router>
   );
 }
+
+const ProtectedRoute = ({ children }) => {
+    const { user, loading } = useAuth();
+    const location = useLocation();
+
+    if (loading) {
+        return null; // or a loading spinner
+    }
+
+    if (!user) {
+        return <Navigate to="/" state={{ from: location }} replace />;
+    }
+
+    return children;
+};
 
 export default App;
