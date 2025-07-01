@@ -25,7 +25,8 @@
     "dotenv": "^16.3.1",
     "decimal.js": "^10.4.3",
     "body-parser": "^1.20.2",
-    "pg": "^8.11.3"
+    "pg": "^8.11.3",
+    "node-fetch": "^2.6.7"
   },
   "scripts": {
     "start": "concurrently \"npm:start:react\" \"npm:start:proxy\"",

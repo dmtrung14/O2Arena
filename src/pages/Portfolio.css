@@ -51,7 +51,7 @@
 .portfolio-page {
     width: 100%;
     min-height: 100vh;
-    padding: 140px 24px 40px; /* Increased top padding for more breathing room */
+    padding: 70px 24px 40px;
     background: linear-gradient(-45deg, 
         #0c0c1e 0%, 
         #161b22 25%, 
@@ -1010,7 +1010,7 @@
 
 @media (max-width: 768px) {
     .portfolio-page {
-        padding: 120px 16px 24px; /* Adjusted for mobile breathing room */
+        padding: 30px 10px 20px;
     }
 
     .portfolio-header {
@@ -1121,7 +1121,7 @@
 
 @media (max-width: 480px) {
     .portfolio-page {
-        padding: 110px 12px 20px; /* Adjusted for small mobile breathing room */
+        padding: 20px 5px 10px;
     }
 
     .portfolio-header h1 {

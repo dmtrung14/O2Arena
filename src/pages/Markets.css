@@ -40,7 +40,7 @@
 }
 
 .markets-page {
-    padding: 120px 20px 40px; /* Top padding for header */
+    padding: 60px 20px 40px; /* Top padding for header */
     background: linear-gradient(-45deg, 
         #0c0c1e 0%, 
         #161b22 25%, 
@@ -628,7 +628,7 @@
 
 @media (max-width: 768px) {
     .markets-page {
-        padding: 100px 15px 20px;
+        padding: 40px 15px 20px;
     }
     
     .page-title {
@@ -715,7 +715,7 @@
 
 @media (max-width: 480px) {
     .markets-page {
-        padding: 90px 10px 15px;
+        padding: 30px 10px 15px;
     }
     
     .page-title {

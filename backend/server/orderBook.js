@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { OrderBook } = require('nodejs-order-book');
 const db = process.env.DATABASE_URL ? require('./db') : null;
+const fetch = require('node-fetch');
 
 const DATA_DIR = path.join(__dirname, 'data');
 if (!process.env.DATABASE_URL) {
@@ -252,6 +253,109 @@ async function placeOrder(market, params) {
     throw err;
   }
 }
+
+// Helper to map our market symbol to Yahoo Finance symbol
+function getYahooSymbol(market) {
+  const map = {
+    'BTC-USDC': 'BTC-USD',
+    'ETH-USDC': 'ETH-USD',
+    'SOL-USDC': 'SOL-USD',
+    'DOGE-USDC': 'DOGE-USD',
+    'ADA-USDC': 'ADA-USD',
+    'TSLA': 'TSLA',
+    'NVDA': 'NVDA',
+    'META': 'META',
+    'PLTR': 'PLTR',
+    'SNOW': 'SNOW',
+    'UBER': 'UBER',
+    'HOOD': 'HOOD',
+    'ABNB': 'ABNB',
+  };
+  return map[market] || market;
+}
+
+// Fetch latest price from Yahoo Finance
+async function fetchYahooPrice(market) {
+  const symbol = getYahooSymbol(market);
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1m&range=1d`;
+  try {
+    const res = await fetch(url, {
+      headers: { 'User-Agent': 'Mozilla/5.0' }
+    });
+    const data = await res.json();
+    const result = data.chart?.result?.[0];
+    if (!result) return null;
+    const price = result.meta?.regularMarketPrice || result.meta?.previousClose || null;
+    return price;
+  } catch (err) {
+    console.error(`[OrderBook] Failed to fetch Yahoo price for ${market}:`, err);
+    return null;
+  }
+}
+
+// Random walk state for each market
+const randomWalkState = {};
+
+// Simulate a random walk around the real price
+function randomWalkPrice(market, realPrice) {
+  if (!randomWalkState[market]) {
+    randomWalkState[market] = realPrice;
+    return realPrice;
+  }
+  // Walk by up to ±0.2% per step
+  const maxStep = realPrice * 0.002;
+  const step = (Math.random() - 0.5) * 2 * maxStep;
+  let newPrice = randomWalkState[market] + step;
+  // Clamp to ±2% of real price
+  const min = realPrice * 0.98;
+  const max = realPrice * 1.02;
+  newPrice = Math.max(min, Math.min(max, newPrice));
+  randomWalkState[market] = newPrice;
+  return newPrice;
+}
+
+// Periodically update the order book with random walk prices
+async function updateOrderBooksWithRandomWalk() {
+  for (const market of Object.keys(SUPPORTED_MARKETS)) {
+    // Only update if not using real exchange feed
+    if (process.env.ENABLE_BINANCE === 'true' || process.env.ENABLE_COINBASE === 'true') continue;
+    const ob = orderBooks.get(market);
+    if (!ob) continue;
+    const realPrice = await fetchYahooPrice(market);
+    if (!realPrice) continue;
+    // Clear existing mock orders
+    ob.clear();
+    const spread = realPrice * 0.001; // 0.1% spread
+    // Add bid levels
+    for (let i = 1; i <= 10; i++) {
+      const price = randomWalkPrice(market, realPrice) - (spread * i);
+      const size = Math.random() * 5 + 0.1;
+      await placeOrder(market, {
+        id: `RW-BID-${market}-${i}-${Date.now()}`,
+        side: 'buy',
+        price: price,
+        size: size,
+        type: 'limit'
+      });
+    }
+    // Add ask levels
+    for (let i = 1; i <= 10; i++) {
+      const price = randomWalkPrice(market, realPrice) + (spread * i);
+      const size = Math.random() * 5 + 0.1;
+      await placeOrder(market, {
+        id: `RW-ASK-${market}-${i}-${Date.now()}`,
+        side: 'sell',
+        price: price,
+        size: size,
+        type: 'limit'
+      });
+    }
+    console.log(`[OrderBook] Updated ${market} with random walk around $${realPrice}`);
+  }
+}
+
+// Start periodic update every 5 seconds
+setInterval(updateOrderBooksWithRandomWalk, 5000);
 
 // Public API
 module.exports = {

@@ -80,7 +80,7 @@ const TradePage = ({ selectedMarket: propSelectedMarket }) => {
       display: 'grid',
       gridTemplateColumns: '1fr 350px 350px',
       gridTemplateRows: 'auto 1fr',
-      gap: '0',
+      gap: '8px',
       height: 'calc(100vh - 200px)',
       minHeight: '600px',
       flex: 1,
