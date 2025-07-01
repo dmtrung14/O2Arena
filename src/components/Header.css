@@ -71,12 +71,116 @@
   cursor: pointer;
   display: flex;
   align-items: center;
+  gap: 15px;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
 }
 
 .user-nickname {
   color: #D1D4DC;
-  font-size: 18px; /* Bigger font */
-  margin-right: 15px; /* Space between name and avatar */
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* ===========================================
+   HEADER ACCOUNT INDICATOR - FRESH DESIGN
+   =========================================== */
+
+.header-account-indicator {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(145deg, 
+    rgba(46, 189, 133, 0.15) 0%, 
+    rgba(46, 189, 133, 0.08) 50%,
+    rgba(46, 189, 133, 0.12) 100%
+  );
+  border: 1.5px solid rgba(46, 189, 133, 0.3);
+  border-radius: 16px;
+  padding: 10px 14px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  backdrop-filter: blur(12px);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 
+    0 4px 12px rgba(46, 189, 133, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.header-account-indicator::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(46, 189, 133, 0.15), 
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.header-account-indicator:hover {
+  border-color: rgba(46, 189, 133, 0.5);
+  background: linear-gradient(145deg, 
+    rgba(46, 189, 133, 0.22) 0%, 
+    rgba(46, 189, 133, 0.12) 50%,
+    rgba(46, 189, 133, 0.18) 100%
+  );
+  transform: translateY(-1px);
+  box-shadow: 
+    0 8px 20px rgba(46, 189, 133, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.header-account-indicator:hover::before {
+  left: 100%;
+}
+
+.header-account-icon {
+  font-size: 18px;
+  line-height: 1;
+  filter: drop-shadow(0 0 8px rgba(46, 189, 133, 0.3));
+  position: relative;
+  z-index: 1;
+}
+
+.header-account-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  position: relative;
+  z-index: 1;
+}
+
+.header-account-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: #2EBD85;
+  letter-spacing: 0.3px;
+  line-height: 1;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-shadow: 0 0 10px rgba(46, 189, 133, 0.3);
+}
+
+.header-account-balance {
+  font-size: 11px;
+  font-weight: 500;
+  color: #fff;
+  line-height: 1;
+  opacity: 0.9;
+  letter-spacing: 0.2px;
 }
 
 .user-avatar {
@@ -84,6 +188,12 @@
   height: 40px;
   border-radius: 50%;
   border: 2px solid #4a4a7c;
+  transition: all 0.2s ease;
+}
+
+.user-profile:hover .user-avatar {
+  border-color: #2EBD85;
+  box-shadow: 0 0 0 2px rgba(46, 189, 133, 0.2);
 }
 
 .profile-dropdown {
@@ -108,4 +218,81 @@
 
 .dropdown-item:hover {
   background-color: #2a2a50;
+}
+
+/* ===========================================
+   RESPONSIVE DESIGN FOR SUBACCOUNT INDICATOR
+   =========================================== */
+
+@media (max-width: 768px) {
+  .user-info {
+    gap: 6px;
+  }
+  
+  .user-nickname {
+    font-size: 16px;
+  }
+  
+  .header-account-indicator {
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 14px;
+  }
+  
+  .header-account-icon {
+    font-size: 16px;
+  }
+  
+  .header-account-name {
+    font-size: 11px;
+    max-width: 100px;
+  }
+  
+  .header-account-balance {
+    font-size: 10px;
+  }
+  
+  .user-avatar {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+@media (max-width: 480px) {
+  .user-profile {
+    gap: 8px;
+  }
+  
+  .user-info {
+    gap: 4px;
+  }
+  
+  .user-nickname {
+    font-size: 14px;
+  }
+  
+  .header-account-indicator {
+    padding: 6px 10px;
+    gap: 8px;
+    border-radius: 12px;
+  }
+  
+  .header-account-icon {
+    font-size: 14px;
+  }
+  
+  .header-account-name {
+    font-size: 10px;
+    max-width: 80px;
+    letter-spacing: 0.2px;
+  }
+  
+  .header-account-balance {
+    font-size: 9px;
+  }
+  
+  .user-avatar {
+    width: 32px;
+    height: 32px;
+  }
 }

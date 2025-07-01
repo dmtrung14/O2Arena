@@ -3,12 +3,14 @@ import { NavLink, Link, useNavigate } from 'react-router-dom';
 import './Header.css';
 import AuthModal from './AuthModal';
 import { useAuth } from '../App';
+import { useSubaccount } from '../context/SubaccountContext';
 import { auth } from '../firebase';
 
 function Header() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const { user } = useAuth();
+  const { selectedSubaccount } = useSubaccount();
   const navigate = useNavigate();
 
   const handleSignInClick = () => {
@@ -27,7 +29,23 @@ function Header() {
 
   const UserProfile = () => (
     <div className="user-profile" onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}>
-        <span className="user-nickname">{user.nickname}</span>
+        <div className="user-info">
+          {selectedSubaccount && (
+            <div className="header-account-indicator">
+              <span className="header-account-icon">💰</span>
+              <div className="header-account-info">
+                <span className="header-account-name">{selectedSubaccount.name}</span>
+                <span className="header-account-balance">
+                  ${(selectedSubaccount.balance || 0).toLocaleString('en-US', {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0
+                  })}
+                </span>
+              </div>
+            </div>
+          )}
+          <span className="user-nickname">{user.nickname}</span>
+        </div>
         <img src={user.photoURL} alt="User" className="user-avatar" />
         {isProfileMenuOpen && (
             <div className="profile-dropdown">

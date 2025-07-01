@@ -12,9 +12,38 @@
 
 .mini-header {
   display: flex;
+  align-items: center;
   border-bottom: 1px solid #2A2E39;
   background: #000000;
   flex-shrink: 0;
+  position: relative;
+}
+
+.connection-status {
+  position: absolute;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.7rem;
+  color: #848E9C;
+}
+
+.status-indicator {
+  font-size: 0.6rem;
+  line-height: 1;
+}
+
+.status-indicator.connected {
+  color: #2EBD85;
+}
+
+.status-indicator.disconnected {
+  color: #ff5252;
+}
+
+.status-text {
+  white-space: nowrap;
 }
 
 .mini-header button {
@@ -174,6 +203,51 @@
 }
 .trade-size { flex: 1.5 1 0; }
 .trade-time { flex: 1.5 1 0; }
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 40px 20px;
+  color: #848E9C;
+}
+
+.loading-spinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid #2A2E39;
+  border-top: 3px solid #2EBD85;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 15px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-state p {
+  margin: 0 0 5px 0;
+  font-size: 0.9rem;
+  color: #D1D4DC;
+}
+
+.loading-state small {
+  font-size: 0.7rem;
+  color: #848E9C;
+}
+
+.no-trades {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  color: #848E9C;
+  font-style: italic;
+}
 
 ul::-webkit-scrollbar { width: 5px; }
 ul::-webkit-scrollbar-track { background: #000000; }

@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './MarketSelector.css';
 
-const MarketSelector = ({ markets, selectedMarket, onMarketChange }) => {
+const MarketSelector = ({ markets, allMarkets, selectedMarket, onMarketChange }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [marketStats, setMarketStats] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeTab, setActiveTab] = useState('All');
   const wrapperRef = useRef(null);
 
   useEffect(() => {
@@ -39,18 +41,59 @@ const MarketSelector = ({ markets, selectedMarket, onMarketChange }) => {
   const bidPercentage = 50 * (1 - fundingRate);
   const askPercentage = 50 * (1 + fundingRate);
 
-  const handleToggle = () => setIsOpen(!isOpen);
+  const handleToggle = () => {
+    setIsOpen(!isOpen);
+    setSearchQuery(''); // Clear search when opening/closing
+  };
 
   const handleSelectMarket = (market) => {
     onMarketChange(market);
     setMarketStats(null);
     setIsOpen(false);
+    setSearchQuery('');
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  // Filter markets based on search query and active tab
+  const getFilteredMarkets = () => {
+    let marketsToShow = allMarkets || markets;
+    
+    // Filter by search query
+    if (searchQuery.trim()) {
+      marketsToShow = marketsToShow.filter(market => 
+        market.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (market.name.includes('-') && market.name.split('-')[0].toLowerCase().includes(searchQuery.toLowerCase()))
+      );
+    }
+    
+    // Filter by tab
+    if (activeTab !== 'All' && marketsToShow.some(m => m.type)) {
+      if (activeTab === 'Crypto') {
+        marketsToShow = marketsToShow.filter(market => market.type === 'crypto');
+      } else if (activeTab === 'Stocks') {
+        marketsToShow = marketsToShow.filter(market => market.type === 'stock');
+      }
+    }
+    
+    return marketsToShow;
+  };
+
+  // Get quick selection markets (featured markets for non-search view)
+  const getQuickSelectionMarkets = () => {
+    if (searchQuery.trim()) {
+      return []; // Don't show quick selection when searching
+    }
+    return markets; // Original featured markets for quick selection
   };
 
   useEffect(() => {
     function handleClickOutside(event) {
       if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
         setIsOpen(false);
+        setSearchQuery('');
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -58,7 +101,6 @@ const MarketSelector = ({ markets, selectedMarket, onMarketChange }) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [wrapperRef]);
-
 
   return (
     <div className="market-selector-container" ref={wrapperRef}>
@@ -116,24 +158,81 @@ const MarketSelector = ({ markets, selectedMarket, onMarketChange }) => {
       {isOpen && (
         <div className="market-dropdown">
           <div className="search-bar">
-            <input type="text" placeholder="Search token..." />
+            <input 
+              type="text" 
+              placeholder="Search symbol..." 
+              value={searchQuery}
+              onChange={handleSearchChange}
+              autoFocus
+            />
           </div>
-           <div className="market-tabs">
-            <span>All</span>
-            <span>Favs</span>
-            <span>Recently Listed</span>
+          <div className="market-tabs">
+            <span 
+              className={activeTab === 'All' ? 'active' : ''}
+              onClick={() => setActiveTab('All')}
+            >
+              All
+            </span>
+            <span 
+              className={activeTab === 'Crypto' ? 'active' : ''}
+              onClick={() => setActiveTab('Crypto')}
+            >
+              Crypto
+            </span>
+            <span 
+              className={activeTab === 'Stocks' ? 'active' : ''}
+              onClick={() => setActiveTab('Stocks')}
+            >
+              Stocks
+            </span>
           </div>
+          
           <div className="market-list">
-            {markets.map((market) => (
-              <div
-                key={market.name}
-                className="market-item"
-                onClick={() => handleSelectMarket(market)}
-              >
-                <img src={market.logo} alt={`${market.name} logo`} className="market-logo" />
-                <span className="market-name-dropdown">{market.name}</span>
-              </div>
-            ))}
+            {/* Quick Selection Section */}
+            {!searchQuery.trim() && (
+              <>
+                <div className="market-section-header">Quick Selection</div>
+                {getQuickSelectionMarkets().map((market) => (
+                  <div
+                    key={`quick-${market.name}`}
+                    className="market-item"
+                    onClick={() => handleSelectMarket(market)}
+                  >
+                    <img src={market.logo} alt={`${market.name} logo`} className="market-logo" />
+                    <span className="market-name-dropdown">{market.name}</span>
+                    <span className="market-type-badge">Featured</span>
+                  </div>
+                ))}
+                <div className="market-section-divider"></div>
+              </>
+            )}
+            
+            {/* All Markets Section */}
+            {(searchQuery.trim() || allMarkets) && (
+              <>
+                {!searchQuery.trim() && <div className="market-section-header">All Markets</div>}
+                {getFilteredMarkets().map((market) => (
+                  <div
+                    key={`all-${market.name}`}
+                    className="market-item"
+                    onClick={() => handleSelectMarket(market)}
+                  >
+                    <img src={market.logo} alt={`${market.name} logo`} className="market-logo" />
+                    <span className="market-name-dropdown">{market.name}</span>
+                    {market.type && (
+                      <span className={`market-type-badge ${market.type}`}>
+                        {market.type.charAt(0).toUpperCase() + market.type.slice(1)}
+                      </span>
+                    )}
+                  </div>
+                ))}
+                {getFilteredMarkets().length === 0 && searchQuery.trim() && (
+                  <div className="no-results">
+                    No markets found for "{searchQuery}"
+                  </div>
+                )}
+              </>
+            )}
           </div>
         </div>
       )}

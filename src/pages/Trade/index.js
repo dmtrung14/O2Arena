@@ -1,225 +1,198 @@
-import React, { useState, useEffect, useRef } from 'react';
-import './style.css';
+import React, { useState, useEffect } from 'react';
+import { FaGithub } from 'react-icons/fa';
+import MarketSelector from '../../components/MarketSelector';
+import Chart from '../../components/Chart';
+import OrderBook from '../../components/OrderBook';
+import TradeForm from '../../components/TradeForm';
 
-function Trade({ selectedMarket }) {
-  const [orderType, setOrderType] = useState('market');
-  const [direction, setDirection] = useState('buy');
-  const [activeTab, setActiveTab] = useState('orderbook');
-  const [orderBook, setOrderBook] = useState({ asks: [], bids: [] });
-  const [trades, setTrades] = useState([]);
-  const [spread, setSpread] = useState({ value: 0, percentage: 0 });
-  const [maxLogTotal, setMaxLogTotal] = useState(1);
-  const asksContainerRef = useRef(null);
+const markets = [
+  { name: 'BTC-USDC', logo: '/bitcoin.svg', marketId: 4, symbol: 'BINANCE:BTCUSDT' },
+  { name: 'ETH-USDC', logo: '/ethereum.svg', marketId: 3, symbol: 'BINANCE:ETHUSDT' },
+  { name: 'SOL-USDC', logo: '/solana.svg', marketId: 5, symbol: 'BINANCE:SOLUSDT' },
+  { name: 'DOGE-USDC', logo: '/dogecoin.svg', marketId: 6, symbol: 'BINANCE:DOGEUSDT' },
+  { name: 'ADA-USDC', logo: '/cardano.svg', marketId: 7, symbol: 'BINANCE:ADAUSDT' },
+  { name: 'TSLA', logo: '/tesla.svg', marketId: 8, symbol: 'NASDAQ:TSLA' },
+  { name: 'NVDA', logo: '/nvidia.svg', marketId: 9, symbol: 'NASDAQ:NVDA' },
+  { name: 'META', logo: '/meta.svg', marketId: 10, symbol: 'NASDAQ:META' },
+];
 
+const allAvailableMarkets = [
+  // Crypto
+  { name: 'BTC-USDC', logo: '/bitcoin.svg', marketId: 4, symbol: 'BINANCE:BTCUSDT', type: 'crypto' },
+  { name: 'ETH-USDC', logo: '/ethereum.svg', marketId: 3, symbol: 'BINANCE:ETHUSDT', type: 'crypto' },
+  { name: 'SOL-USDC', logo: '/solana.svg', marketId: 5, symbol: 'BINANCE:SOLUSDT', type: 'crypto' },
+  { name: 'DOGE-USDC', logo: '/dogecoin.svg', marketId: 6, symbol: 'BINANCE:DOGEUSDT', type: 'crypto' },
+  { name: 'ADA-USDC', logo: '/cardano.svg', marketId: 7, symbol: 'BINANCE:ADAUSDT', type: 'crypto' },
+  
+  // Stocks
+  { name: 'TSLA', logo: '/tesla.svg', marketId: 8, symbol: 'NASDAQ:TSLA', type: 'stock' },
+  { name: 'NVDA', logo: '/nvidia.svg', marketId: 9, symbol: 'NASDAQ:NVDA', type: 'stock' },
+  { name: 'META', logo: '/meta.svg', marketId: 10, symbol: 'NASDAQ:META', type: 'stock' },
+  { name: 'PLTR', logo: '/palantir.svg', marketId: 11, symbol: 'NYSE:PLTR', type: 'stock' },
+  { name: 'SNOW', logo: '/snowflake.svg', marketId: 12, symbol: 'NYSE:SNOW', type: 'stock' },
+  { name: 'UBER', logo: '/uber.svg', marketId: 13, symbol: 'NYSE:UBER', type: 'stock' },
+  { name: 'HOOD', logo: '/robinhood.svg', marketId: 14, symbol: 'NASDAQ:HOOD', type: 'stock' },
+  { name: 'ABNB', logo: '/airbnb.svg', marketId: 15, symbol: 'NASDAQ:ABNB', type: 'stock' },
+];
+
+const TradePage = ({ selectedMarket: propSelectedMarket }) => {
+  const [selectedMarket, setSelectedMarket] = useState(propSelectedMarket || markets[0]);
+
+  // Update local state when prop changes
   useEffect(() => {
-    let ws;
-
-    const handleSnapshot = (data) => {
-      const lowestAsks = [...data.asks].sort((a, b) => a[0] - b[0]);
-      const highestBids = [...data.bids].sort((a, b) => b[0] - a[0]);
-
-      const asksWithLog = lowestAsks.map((a) => ({ price: a[0], size: a[1], logTotal: Math.log2((a[0] * a[1]) + 1) }));
-      const bidsWithLog = highestBids.map((b) => ({ price: b[0], size: b[1], logTotal: Math.log2((b[0] * b[1]) + 1) }));
-
-      const maxLog = Math.max(...asksWithLog.map((a) => a.logTotal), ...bidsWithLog.map((b) => b.logTotal));
-      setMaxLogTotal(maxLog > 0 ? maxLog : 1);
-
-      setOrderBook({ asks: [...asksWithLog].reverse(), bids: bidsWithLog });
-
-      if (lowestAsks.length > 0 && highestBids.length > 0) {
-        const lowestAskPrice = lowestAsks[0][0];
-        const highestBidPrice = highestBids[0][0];
-        const newSpread = lowestAskPrice - highestBidPrice;
-        const newSpreadPercentage = highestBidPrice > 0 ? (newSpread / highestBidPrice) * 100 : 0;
-        setSpread({ value: newSpread, percentage: newSpreadPercentage });
-      }
-    };
-
-    const connectWs = () => {
-      const url = `${window.location.origin.replace(/^http/, 'ws')}/ws/depth`;
-      ws = new WebSocket(url);
-      ws.onmessage = (evt) => {
-        try {
-          const msg = JSON.parse(evt.data);
-          if (msg.type === 'depth') handleSnapshot(msg.data);
-        } catch (err) {
-          console.error('WS parse error', err);
-        }
-      };
-      ws.onclose = () => setTimeout(connectWs, 3000);
-    };
-
-    connectWs();
-
-    return () => {
-      if (ws) ws.close();
-    };
-  }, [selectedMarket]);
-
-  useEffect(() => {
-    if (asksContainerRef.current) {
-      asksContainerRef.current.scrollTop = asksContainerRef.current.scrollHeight;
+    if (propSelectedMarket) {
+      setSelectedMarket(propSelectedMarket);
     }
-  }, [orderBook.asks]);
+  }, [propSelectedMarket]);
+
+  const styles = {
+    container: {
+      width: '100%',
+      padding: '8px 24px 0',
+      background: 'linear-gradient(-45deg, #0c0c1e 0%, #161b22 25%, #1a1a36 50%, #0d1117 75%, #0c0c1e 100%)',
+      backgroundSize: '400% 400%',
+      animation: 'trade-background-flow 20s ease infinite',
+      color: '#c9d1d9',
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+    },
+    footer: {
+      width: '100%',
+      textAlign: 'center',
+      color: '#8b949e',
+      fontSize: '0.75rem',
+      marginTop: '12px',
+      letterSpacing: '0.03em',
+      opacity: 0.5,
+      userSelect: 'none',
+    },
+    creditLink: {
+      color: '#2EBD85',
+      textDecoration: 'none',
+      fontWeight: 700,
+      marginLeft: 4,
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: '4px',
+    },
+    mainGrid: {
+      display: 'grid',
+      gridTemplateColumns: '1fr 350px 350px',
+      gridTemplateRows: 'auto 1fr',
+      gap: '0',
+      height: 'calc(100vh - 200px)',
+      minHeight: '600px',
+      flex: 1,
+    },
+
+    chartSection: {
+      gridColumn: '1',
+      gridRow: '1 / 3',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '0'
+    },
+
+    chartContainer: {
+      background: 'linear-gradient(145deg, rgba(26, 26, 54, 0.9) 0%, rgba(22, 27, 34, 0.95) 50%, rgba(13, 17, 23, 0.9) 100%)',
+      backdropFilter: 'blur(20px)',
+      border: '1px solid rgba(255, 255, 255, 0.1)',
+      borderRadius: '4px',
+      overflow: 'hidden',
+      flex: 1,
+      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)'
+    },
+
+    orderBookContainer: {
+      gridColumn: '2',
+      gridRow: '1 / 3',
+      background: 'linear-gradient(145deg, rgba(26, 26, 54, 0.9) 0%, rgba(22, 27, 34, 0.95) 50%, rgba(13, 17, 23, 0.9) 100%)',
+      backdropFilter: 'blur(20px)',
+      border: '1px solid rgba(255, 255, 255, 0.1)',
+      borderRadius: '4px',
+      overflow: 'hidden',
+      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)'
+    },
+
+    tradeFormContainer: {
+      gridColumn: '3',
+      gridRow: '1 / 3',
+      background: 'linear-gradient(145deg, rgba(26, 26, 54, 0.9) 0%, rgba(22, 27, 34, 0.95) 50%, rgba(13, 17, 23, 0.9) 100%)',
+      backdropFilter: 'blur(20px)',
+      border: '1px solid rgba(255, 255, 255, 0.1)',
+      borderRadius: '4px',
+      overflow: 'hidden',
+      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)'
+    }
+  };
 
   return (
-    <div className="trade-panel">
-      <div className="trade-form-container">
-        <div className="order-type-tabs">
-          <button className={orderType === 'market' ? 'active' : ''} onClick={() => setOrderType('market')}>Market</button>
-          <button className={orderType === 'limit' ? 'active' : ''} onClick={() => setOrderType('limit')}>Limit</button>
-        </div>
-
-        <div className="direction-tabs">
-          <button 
-            className={`buy-btn ${direction === 'buy' ? 'active' : ''}`} 
-            onClick={() => setDirection('buy')}
-          >
-            Buy | Long
-          </button>
-          <button 
-            className={`sell-btn ${direction === 'sell' ? 'active' : ''}`} 
-            onClick={() => setDirection('sell')}
-          >
-            Sell | Short
-          </button>
-        </div>
-
-        <div className="form-body">
-          <div className="form-row">
-            <label>Available to Trade</label>
-            <span>$0.00</span>
-          </div>
-          <div className="form-row">
-            <label>Max Position Size</label>
-            <span>0.00000</span>
+    <>
+      <style>{`
+        @keyframes trade-background-flow {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        
+        @media (max-width: 1400px) {
+          .main-grid {
+            grid-template-columns: 1fr !important;
+            grid-template-rows: auto auto auto !important;
+            height: auto !important;
+          }
+          .chart-section {
+            grid-column: 1 !important;
+            grid-row: 1 !important;
+          }
+          .orderbook-container {
+            grid-column: 1 !important;
+            grid-row: 2 !important;
+          }
+          .tradeform-container {
+            grid-column: 1 !important;
+            grid-row: 3 !important;
+          }
+        }
+      `}</style>
+      
+      <div style={styles.container}>
+        <div style={styles.mainGrid} className="main-grid">
+          <div style={styles.chartSection} className="chart-section">
+            <MarketSelector
+              markets={markets}
+              allMarkets={allAvailableMarkets}
+              selectedMarket={selectedMarket}
+              onMarketChange={setSelectedMarket}
+            />
+            <div style={styles.chartContainer}>
+              <Chart selectedMarket={selectedMarket} />
+            </div>
           </div>
           
-          {orderType === 'limit' && (
-            <div className="form-row input-row">
-              <label>Price</label>
-              <input type="text" placeholder="0" />
-            </div>
-          )}
-
-          <div className="form-row input-row">
-            <label>Amount</label>
-            <input type="text" placeholder="0.00" />
+          <div style={styles.orderBookContainer} className="orderbook-container">
+            <OrderBook selectedMarket={selectedMarket} />
           </div>
-
-          <div className="form-row slider-row">
-            <input type="range" min="0" max="100" defaultValue="0" />
+          
+          <div style={styles.tradeFormContainer} className="tradeform-container">
+            <TradeForm selectedMarket={selectedMarket} />
           </div>
-
-          <div className="form-row checkbox-row">
-            <label>
-              <input type="checkbox" />
-              Reduce-Only
-            </label>
-            {orderType === 'limit' && (
-              <label>
-                <input type="checkbox" />
-                Post-Only
-              </label>
-            )}
-          </div>
-
-          <div className="form-row info-row">
-            <label>Order Value</label>
-            <span>$0.00</span>
-          </div>
-          <div className="form-row info-row">
-            <label>Initial Margin</label>
-            <span>$0.00</span>
-          </div>
-          <div className="form-row info-row">
-            <label>Est. Liquidation Price</label>
-            <span>N/A</span>
-          </div>
-
-          <button className="connect-wallet-form-btn">Connect Wallet</button>
+        </div>
+        <div style={styles.footer}>
+          Made with <span role="img" aria-label="love">❤️‍🔥</span> by{' '}
+          <a
+            href="https://github.com/dmtrung14"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={styles.creditLink}
+          >
+            <FaGithub size={16} style={{ verticalAlign: 'middle' }} /> dmtrung14
+          </a>
         </div>
       </div>
-
-      <div className="orderbook-container">
-        <div className="mini-header">
-          <button className={activeTab === 'orderbook' ? 'active' : ''} onClick={() => setActiveTab('orderbook')}>OrderBook</button>
-          <button className={activeTab === 'trades' ? 'active' : ''} onClick={() => setActiveTab('trades')}>Trades</button>
-        </div>
-        {activeTab === 'orderbook' && (
-          <>
-            <div className="sells">
-              <div className="table-header">
-                <span className="price-header">Price</span>
-                <span className="amount-header">Amount</span>
-                <span className="value-header">Value</span>
-              </div>
-              <ul ref={asksContainerRef}>
-                {orderBook.asks.map((ask, index) => (
-                  <li key={index}>
-                    <div className="bg-bar" style={{ width: `${(ask.logTotal / maxLogTotal) * 100}%` }}></div>
-                    <div className="data-row">
-                      <span className="price">{ask.price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
-                      <span className="amount">{ask.size.toLocaleString('en-US', {minimumFractionDigits: 5, maximumFractionDigits: 5})}</span>
-                      <span className="value">{(ask.price * ask.size).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="spread">
-              <span className="spread-label">Spread</span>
-              <span className="spread-value">{spread.value.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
-              <span className="spread-percentage">{spread.percentage.toFixed(2)}%</span>
-            </div>
-
-            <div className="buys">
-              <div className="table-header">
-                <span className="price-header">Price</span>
-                <span className="amount-header">Amount</span>
-                <span className="value-header">Value</span>
-              </div>
-              <ul>
-                {orderBook.bids.map((bid, index) => (
-                  <li key={index}>
-                    <div className="bg-bar" style={{ width: `${(bid.logTotal / maxLogTotal) * 100}%` }}></div>
-                    <div className="data-row">
-                      <span className="price">{bid.price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
-                      <span className="amount">{bid.size.toLocaleString('en-US', {minimumFractionDigits: 5, maximumFractionDigits: 5})}</span>
-                      <span className="value">{(bid.price * bid.size).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </>
-        )}
-        {activeTab === 'trades' && (
-          <div className="trades-list">
-            <div className="table-header">
-              <span className="trade-price">Price</span>
-              <span className="trade-arrow"></span>
-              <span className="trade-size">Size ({selectedMarket.name.split('-')[0]})</span>
-              <span className="trade-time">Time</span>
-            </div>
-            <ul>
-              {trades.map((trade, index) => (
-                <li key={index} className={trade.takerSide === 'bid' ? 'trade-buy' : 'trade-sell'}>
-                  <span className="trade-price">
-                    {(trade.price / 10).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
-                  </span>
-                  <span className="trade-arrow">{trade.takerSide === 'bid' ? '↑' : '↓'}</span>
-                  <span className="trade-size">{(trade.baseSize / 100000).toLocaleString('en-US', {minimumFractionDigits: 5, maximumFractionDigits: 5})}</span>
-                  <span className="trade-time">{new Date(trade.time).toLocaleTimeString()}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
-    </div>
+    </>
   );
-}
+};
 
-export default Trade;
+export default TradePage;

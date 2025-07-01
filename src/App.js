@@ -10,8 +10,10 @@ import Portfolio from './pages/Portfolio';
 import Markets from './pages/Markets';
 import LandingPage from './pages/LandingPage';
 import ProfilePage from './pages/Profile';
+import TradePage from './pages/Trade';
 import { auth, db } from './firebase';
 import { doc, getDoc } from 'firebase/firestore';
+import { SubaccountProvider } from './context/SubaccountContext';
 
 const AuthContext = createContext();
 
@@ -42,7 +44,11 @@ const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={{ user, loading }}>
-      {!loading && children}
+      {!loading && (
+        <SubaccountProvider>
+          {children}
+        </SubaccountProvider>
+      )}
     </AuthContext.Provider>
   );
 };
@@ -51,6 +57,31 @@ const markets = [
   { name: 'BTC-USDC', logo: '/bitcoin.svg', marketId: 4, symbol: 'BINANCE:BTCUSDT' },
   { name: 'ETH-USDC', logo: '/ethereum.svg', marketId: 3, symbol: 'BINANCE:ETHUSDT' },
   { name: 'SOL-USDC', logo: '/solana.svg', marketId: 5, symbol: 'BINANCE:SOLUSDT' },
+  { name: 'DOGE-USDC', logo: '/dogecoin.svg', marketId: 6, symbol: 'BINANCE:DOGEUSDT' },
+  { name: 'ADA-USDC', logo: '/cardano.svg', marketId: 7, symbol: 'BINANCE:ADAUSDT' },
+  { name: 'TSLA', logo: '/tesla.svg', marketId: 8, symbol: 'NASDAQ:TSLA' },
+  { name: 'NVDA', logo: '/nvidia.svg', marketId: 9, symbol: 'NASDAQ:NVDA' },
+  { name: 'META', logo: '/meta.svg', marketId: 10, symbol: 'NASDAQ:META' },
+];
+
+// All available markets for search functionality
+const allAvailableMarkets = [
+  // Crypto
+  { name: 'BTC-USDC', logo: '/bitcoin.svg', marketId: 4, symbol: 'BINANCE:BTCUSDT', type: 'crypto' },
+  { name: 'ETH-USDC', logo: '/ethereum.svg', marketId: 3, symbol: 'BINANCE:ETHUSDT', type: 'crypto' },
+  { name: 'SOL-USDC', logo: '/solana.svg', marketId: 5, symbol: 'BINANCE:SOLUSDT', type: 'crypto' },
+  { name: 'DOGE-USDC', logo: '/dogecoin.svg', marketId: 6, symbol: 'BINANCE:DOGEUSDT', type: 'crypto' },
+  { name: 'ADA-USDC', logo: '/cardano.svg', marketId: 7, symbol: 'BINANCE:ADAUSDT', type: 'crypto' },
+  
+  // Stocks
+  { name: 'TSLA', logo: '/tesla.svg', marketId: 8, symbol: 'NASDAQ:TSLA', type: 'stock' },
+  { name: 'NVDA', logo: '/nvidia.svg', marketId: 9, symbol: 'NASDAQ:NVDA', type: 'stock' },
+  { name: 'META', logo: '/meta.svg', marketId: 10, symbol: 'NASDAQ:META', type: 'stock' },
+  { name: 'PLTR', logo: '/palantir.svg', marketId: 11, symbol: 'NYSE:PLTR', type: 'stock' },
+  { name: 'SNOW', logo: '/snowflake.svg', marketId: 12, symbol: 'NYSE:SNOW', type: 'stock' },
+  { name: 'UBER', logo: '/uber.svg', marketId: 13, symbol: 'NYSE:UBER', type: 'stock' },
+  { name: 'HOOD', logo: '/robinhood.svg', marketId: 14, symbol: 'NASDAQ:HOOD', type: 'stock' },
+  { name: 'ABNB', logo: '/airbnb.svg', marketId: 15, symbol: 'NASDAQ:ABNB', type: 'stock' },
 ];
 
 function PageTitleManager({ selectedMarket }) {
@@ -122,20 +153,7 @@ function App() {
             <Route path="/trade" element={
               <>
                 <Header />
-                <main className="main-content">
-                  <div className="trade-layout-grid">
-                    <div className="chart-container">
-                      <MarketSelector
-                        markets={markets}
-                        selectedMarket={selectedMarket}
-                        onMarketChange={setSelectedMarket}
-                      />
-                      <Chart selectedMarket={selectedMarket} />
-                    </div>
-                    <OrderBook selectedMarket={selectedMarket} />
-                    <TradeForm selectedMarket={selectedMarket} />
-                  </div>
-                </main>
+                <TradePage selectedMarket={selectedMarket} />
               </>
             } />
             <Route path="/portfolio" element={

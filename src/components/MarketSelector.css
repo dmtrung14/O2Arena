@@ -150,17 +150,37 @@
     cursor: pointer;
     font-size: 14px;
     color: #888;
+    padding: 8px 0;
+    transition: color 0.2s ease;
 }
 
-.market-tabs span:first-child {
+.market-tabs span:hover {
+    color: #fff;
+}
+
+.market-tabs span.active {
     color: #f0b90b;
     border-bottom: 2px solid #f0b90b;
-    padding-bottom: 8px;
 }
 
 .market-list {
     max-height: 300px;
     overflow-y: auto;
+}
+
+.market-section-header {
+    padding: 12px 15px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.market-section-divider {
+    height: 1px;
+    background-color: #2a2e39;
+    margin: 8px 0;
 }
 
 .market-item {
@@ -169,6 +189,7 @@
     padding: 12px 15px;
     cursor: pointer;
     transition: background-color 0.2s ease;
+    justify-content: space-between;
 }
 
 .market-item:hover {
@@ -177,4 +198,35 @@
 
 .market-name-dropdown {
     font-size: 16px;
-} 
+    flex: 1;
+    margin-left: 10px;
+}
+
+.market-type-badge {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background-color: #2a2e39;
+    color: #888;
+}
+
+.market-type-badge.crypto {
+    background-color: rgba(46, 189, 133, 0.1);
+    color: #2EBD85;
+}
+
+.market-type-badge.stock {
+    background-color: rgba(240, 185, 11, 0.1);
+    color: #f0b90b;
+}
+
+.no-results {
+    padding: 20px 15px;
+    text-align: center;
+    color: #888;
+    font-size: 14px;
+    font-style: italic;
+}

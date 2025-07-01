@@ -1,0 +1,796 @@
+/* ===========================================
+   TRADE PAGE STYLING - PREMIUM EDITION
+   Educational Focus on Numbers & Data
+   =========================================== */
+
+@keyframes trade-background-flow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes card-float-in {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes stat-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+}
+
+@keyframes price-update {
+    0% { background-color: rgba(46, 189, 133, 0.2); }
+    100% { background-color: transparent; }
+}
+
+/* ===========================================
+   MAIN TRADE PAGE LAYOUT
+   =========================================== */
+
+.trade-page {
+    width: 100%;
+    min-height: 100vh;
+    padding: 140px 24px 40px;
+    background: red !important; /* SUPER OBVIOUS TEST */
+    color: white !important;
+    position: relative;
+}
+
+.trade-page::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 30%, rgba(46, 189, 133, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(108, 99, 255, 0.06) 0%, transparent 50%),
+        radial-gradient(circle at 40% 90%, rgba(255, 255, 255, 0.02) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ===========================================
+   PAGE TITLE SECTION
+   =========================================== */
+
+.page-title-container {
+    text-align: center;
+    margin-bottom: 48px;
+    position: relative;
+    z-index: 1;
+}
+
+.page-title {
+    font-size: 3rem;
+    font-weight: 800;
+    margin: 0 0 12px 0;
+    background: linear-gradient(135deg, #fff 0%, #c9d1d9 50%, #8b949e 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+    position: relative;
+}
+
+.page-title::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #2EBD85, transparent);
+    border-radius: 2px;
+}
+
+.page-subtitle {
+    color: #8b949e;
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin: 0;
+    font-style: italic;
+}
+
+/* ===========================================
+   MARKET OVERVIEW STATS
+   =========================================== */
+
+.market-overview {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
+    position: relative;
+    z-index: 1;
+}
+
+.stat-card {
+    background: linear-gradient(145deg, 
+        rgba(26, 26, 54, 0.9) 0%, 
+        rgba(22, 27, 34, 0.95) 50%, 
+        rgba(13, 17, 23, 0.9) 100%
+    );
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 24px;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: card-float-in 0.6s ease-out;
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.03), transparent);
+    transition: left 0.6s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(46, 189, 133, 0.3);
+    box-shadow: 
+        0 16px 40px rgba(0, 0, 0, 0.6),
+        0 0 30px rgba(46, 189, 133, 0.2);
+}
+
+.stat-card:hover::before {
+    left: 100%;
+}
+
+.stat-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #8b949e;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: #fff;
+    font-family: 'SF Mono', Monaco, monospace;
+    margin-bottom: 4px;
+}
+
+.stat-value.best-bid {
+    color: #2EBD85;
+}
+
+.stat-value.best-ask {
+    color: #f85149;
+}
+
+.stat-change {
+    font-size: 14px;
+    font-weight: 500;
+    color: #8b949e;
+    font-family: 'SF Mono', Monaco, monospace;
+}
+
+.stat-change.neutral {
+    color: #8b949e;
+}
+
+/* ===========================================
+   TRADING INTERFACE LAYOUT
+   =========================================== */
+
+.trading-interface {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    gap: 32px;
+    position: relative;
+    z-index: 1;
+}
+
+/* ===========================================
+   TRADING PANEL (Left Side)
+   =========================================== */
+
+.trading-panel {
+    background: linear-gradient(145deg, 
+        rgba(26, 26, 54, 0.9) 0%, 
+        rgba(22, 27, 34, 0.95) 50%, 
+        rgba(13, 17, 23, 0.9) 100%
+    );
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    overflow: hidden;
+    animation: card-float-in 0.8s ease-out;
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.panel-header {
+    padding: 24px 24px 0 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 24px;
+}
+
+.panel-header h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 16px 0;
+}
+
+.order-type-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+.tab-button {
+    flex: 1;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #8b949e;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+.tab-button:hover {
+    border-color: rgba(46, 189, 133, 0.5);
+    color: #2EBD85;
+}
+
+.tab-button.active {
+    background: #2EBD85;
+    border-color: #2EBD85;
+    color: #fff;
+}
+
+.direction-selector {
+    display: flex;
+    gap: 12px;
+    padding: 0 24px 24px 24px;
+}
+
+.direction-btn {
+    flex: 1;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #8b949e;
+    padding: 16px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 15px;
+}
+
+.direction-btn.buy-btn:hover,
+.direction-btn.buy-btn.active {
+    background: #2EBD85;
+    border-color: #2EBD85;
+    color: #fff;
+}
+
+.direction-btn.sell-btn:hover,
+.direction-btn.sell-btn.active {
+    background: #f85149;
+    border-color: #f85149;
+    color: #fff;
+}
+
+/* ===========================================
+   ORDER FORM
+   =========================================== */
+
+.order-form {
+    padding: 0 24px 24px 24px;
+}
+
+.form-section {
+    margin-bottom: 24px;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.info-row:last-child {
+    border-bottom: none;
+}
+
+.info-row .label {
+    font-size: 14px;
+    color: #8b949e;
+    font-weight: 500;
+}
+
+.info-row .value {
+    font-size: 14px;
+    color: #fff;
+    font-weight: 600;
+    font-family: 'SF Mono', Monaco, monospace;
+}
+
+.input-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #8b949e;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.form-input {
+    width: 100%;
+    background: rgba(13, 17, 23, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    padding: 16px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-family: 'SF Mono', Monaco, monospace;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #2EBD85;
+    box-shadow: 0 0 0 3px rgba(46, 189, 133, 0.1);
+}
+
+.amount-slider {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    outline: none;
+    margin-bottom: 8px;
+    cursor: pointer;
+}
+
+.amount-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: #2EBD85;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(46, 189, 133, 0.4);
+}
+
+.slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #6e7681;
+    font-weight: 500;
+}
+
+.checkbox-section {
+    display: flex;
+    gap: 24px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #8b949e;
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+    accent-color: #2EBD85;
+    transform: scale(1.1);
+}
+
+.submit-order-btn {
+    width: 100%;
+    background: #2EBD85;
+    border: none;
+    color: #fff;
+    padding: 18px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.submit-order-btn:hover {
+    background: #24a76a;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(46, 189, 133, 0.4);
+}
+
+/* ===========================================
+   DATA PANEL (Right Side)
+   =========================================== */
+
+.data-panel {
+    background: linear-gradient(145deg, 
+        rgba(26, 26, 54, 0.9) 0%, 
+        rgba(22, 27, 34, 0.95) 50%, 
+        rgba(13, 17, 23, 0.9) 100%
+    );
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    overflow: hidden;
+    animation: card-float-in 1s ease-out;
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+}
+
+.data-panel .panel-header {
+    padding: 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 0;
+}
+
+.data-tabs {
+    display: flex;
+    gap: 8px;
+}
+
+.data-content {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ===========================================
+   ORDER BOOK DISPLAY
+   =========================================== */
+
+.orderbook-display {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 600px;
+}
+
+.orderbook-header,
+.trades-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    padding: 16px 24px;
+    background: rgba(13, 17, 23, 0.6);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.col-header {
+    font-size: 12px;
+    font-weight: 600;
+    color: #6e7681;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.col-header.price-col {
+    text-align: left;
+}
+
+.col-header.size-col {
+    text-align: center;
+}
+
+.col-header.total-col,
+.col-header.time-col {
+    text-align: right;
+}
+
+.asks-section,
+.bids-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.section-label {
+    padding: 12px 24px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #8b949e;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: rgba(13, 17, 23, 0.4);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.orderbook-rows {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 24px;
+}
+
+.orderbook-row {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    padding: 6px 0;
+    font-family: 'SF Mono', Monaco, monospace;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    border-radius: 4px;
+}
+
+.orderbook-row:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.orderbook-row .price {
+    text-align: left;
+}
+
+.orderbook-row .size {
+    text-align: center;
+    color: #8b949e;
+}
+
+.orderbook-row .total {
+    text-align: right;
+    color: #6e7681;
+}
+
+.ask-row .price {
+    color: #f85149;
+}
+
+.bid-row .price {
+    color: #2EBD85;
+}
+
+.depth-bar {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    opacity: 0.3;
+    transition: all 0.3s ease;
+    border-radius: 4px;
+}
+
+.ask-bar {
+    background: linear-gradient(90deg, transparent, rgba(248, 81, 73, 0.2));
+}
+
+.bid-bar {
+    background: linear-gradient(90deg, transparent, rgba(46, 189, 133, 0.2));
+}
+
+.orderbook-row:hover .depth-bar {
+    opacity: 0.5;
+}
+
+.spread-display {
+    padding: 16px 24px;
+    text-align: center;
+    background: rgba(13, 17, 23, 0.6);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.spread-value {
+    font-family: 'SF Mono', Monaco, monospace;
+    font-size: 14px;
+    font-weight: 600;
+    color: #c9d1d9;
+}
+
+/* ===========================================
+   TRADES DISPLAY
+   =========================================== */
+
+.trades-display {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 600px;
+}
+
+.trades-rows {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 24px;
+}
+
+.trade-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    padding: 8px 0;
+    font-family: 'SF Mono', Monaco, monospace;
+    font-size: 14px;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    transition: all 0.2s ease;
+}
+
+.trade-row:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.trade-row.buy .trade-price {
+    color: #2EBD85;
+}
+
+.trade-row.sell .trade-price {
+    color: #f85149;
+}
+
+.trade-price {
+    text-align: left;
+}
+
+.trade-size {
+    text-align: center;
+    color: #8b949e;
+}
+
+.trade-time {
+    text-align: right;
+    color: #6e7681;
+    font-size: 13px;
+}
+
+/* ===========================================
+   RESPONSIVE DESIGN
+   =========================================== */
+
+@media (max-width: 1200px) {
+    .trading-interface {
+        grid-template-columns: 380px 1fr;
+        gap: 24px;
+    }
+}
+
+@media (max-width: 968px) {
+    .trading-interface {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+    
+    .trading-panel {
+        order: 2;
+    }
+    
+    .data-panel {
+        order: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .trade-page {
+        padding: 120px 16px 24px;
+    }
+    
+    .page-title {
+        font-size: 2.2rem;
+    }
+    
+    .market-overview {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .stat-card {
+        padding: 20px;
+    }
+    
+    .trading-interface {
+        gap: 20px;
+    }
+    
+    .panel-header {
+        padding: 20px 20px 0 20px;
+    }
+    
+    .order-form {
+        padding: 0 20px 20px 20px;
+    }
+    
+    .direction-selector {
+        padding: 0 20px 20px 20px;
+    }
+    
+    .orderbook-header,
+    .trades-header {
+        padding: 12px 20px;
+    }
+    
+    .orderbook-rows,
+    .trades-rows {
+        padding: 0 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-title {
+        font-size: 1.8rem;
+    }
+    
+    .page-subtitle {
+        font-size: 1rem;
+    }
+    
+    .stat-value {
+        font-size: 20px;
+    }
+    
+    .checkbox-section {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .orderbook-row,
+    .trade-row {
+        font-size: 13px;
+    }
+    
+    .data-panel .panel-header {
+        padding: 16px;
+    }
+}
+
+/* ===========================================
+   SCROLLBAR STYLING
+   =========================================== */
+
+.orderbook-rows::-webkit-scrollbar,
+.trades-rows::-webkit-scrollbar {
+    width: 6px;
+}
+
+.orderbook-rows::-webkit-scrollbar-track,
+.trades-rows::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+}
+
+.orderbook-rows::-webkit-scrollbar-thumb,
+.trades-rows::-webkit-scrollbar-thumb {
+    background: rgba(46, 189, 133, 0.3);
+    border-radius: 3px;
+}
+
+.orderbook-rows::-webkit-scrollbar-thumb:hover,
+.trades-rows::-webkit-scrollbar-thumb:hover {
+    background: rgba(46, 189, 133, 0.5);
+} 

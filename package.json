@@ -32,7 +32,7 @@
     "start:react": "react-scripts start",
     "start:proxy": "node proxy-server.js",
     "start:server": "node server/index.js",
-    "start:all": "concurrently \"npm run start:server\" \"npm run start:react\"",
+    "start:all": "concurrently \"npm run start:server\" \"npm run start:proxy\" \"npm run start:react\"",
     "dev": "react-scripts start",
     "vercel:dev": "vercel dev",
     "build": "react-scripts build",

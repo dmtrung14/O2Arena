@@ -5,6 +5,9 @@ const { placeOrder, cancelOrder } = require('./orderBook');
 
 const WS_URL = 'wss://stream.binance.com:9443/ws/btcusdt@depth@100ms';
 
+// For educational purposes, we can disable real Binance data
+const ENABLE_BINANCE = process.env.ENABLE_BINANCE === 'true';
+
 // Maintain per price level remaining size
 const asks = new Map(); // price -> remaining qty (number)
 const bids = new Map();
@@ -12,6 +15,42 @@ const priceOrders = {
   buy: new Map(), // price -> array of {id,size}
   sell: new Map(),
 };
+
+// Mock data generator for educational use
+function injectMockLiquidity() {
+  if (ENABLE_BINANCE) return; // Skip if using real Binance
+  
+  console.log('[BinanceWorker] Injecting mock educational liquidity');
+  
+  // Generate some fake bid/ask levels around 100k
+  const basePrice = 100000;
+  const levels = [
+    // Bids (buy side)
+    [basePrice - 1000, 0.5],
+    [basePrice - 2000, 1.0],
+    [basePrice - 3000, 2.0],
+    [basePrice - 5000, 5.0],
+    // Asks (sell side)  
+    [basePrice + 1000, 0.5],
+    [basePrice + 2000, 1.0], 
+    [basePrice + 3000, 2.0],
+    [basePrice + 5000, 5.0],
+  ];
+  
+  levels.forEach(([price, size], i) => {
+    const side = i < 4 ? 'buy' : 'sell';
+    const id = `MOCK-${side.toUpperCase()}-${price}-${Date.now()}`;
+    
+    placeOrder({
+      id,
+      side,
+      price,
+      size,
+      type: 'limit',
+      tag: { venue: 'MOCK_EDUCATIONAL' },
+    }).catch(err => console.error('[MockLiquidity] error', err));
+  });
+}
 
 async function syncLevels(side, price, newQty) {
   const map = side === 'sell' ? asks : bids;
@@ -60,6 +99,13 @@ async function syncLevels(side, price, newQty) {
 }
 
 function start() {
+  if (!ENABLE_BINANCE) {
+    console.log('[BinanceWorker] Educational mode - using mock data instead of real Binance');
+    setTimeout(injectMockLiquidity, 2000); // Give orderbook time to initialize
+    return;
+  }
+
+  console.log('[BinanceWorker] Connecting to real Binance WebSocket');
   const ws = new WebSocket(WS_URL);
   ws.on('open', () => console.log('[BinanceWorker] connected'));
   ws.on('message', (data) => {
