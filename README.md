@@ -1,6 +1,6 @@
 <img src="./public/banner.png" style="width:100%" alt="Logo"/>
 
-# 🚀 Oxygen - Real-Time Trading Platform ⭐
+# 🚀 Oxygen - Real-Time Trading Sandbox ⭐
 
 **Oxygen** is a sophisticated real-time trading platform featuring a professional-grade matching engine, live order book management, and comprehensive portfolio tracking. Built with modern web technologies, it provides a complete trading experience with real-time order execution, WebSocket data feeds, and multi-market support.
 
