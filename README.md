@@ -2,7 +2,7 @@
 
 # 🚀 oxygen - Advanced Crypto Trading Sandbox ⭐
 
-`oxygen` is a sophisticated crypto trading sandbox designed for developing and testing trading strategies in a simulated, real-time environment. It provides a feature-rich interface that mirrors professional trading platforms, powered by live market data and advanced trading capabilities.
+[Oxygen](https://oxy-gen.vercel.app/) is a sophisticated crypto trading sandbox designed for developing and testing trading strategies in a simulated, real-time environment. It provides a feature-rich interface that mirrors professional trading platforms, powered by live market data and advanced trading capabilities.
 
 ## ✨ Key Features
 
