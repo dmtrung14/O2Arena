@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { AreaChart, Area, ResponsiveContainer, YAxis } from 'recharts';
+import { useNavigate } from 'react-router-dom';
 import './Markets.css';
 import LoadingSpinner from '../components/LoadingSpinner';
 
@@ -18,6 +19,22 @@ const marketInfo = {
   'RBNHD': { name: 'Robinhood', apiSymbol: 'HOOD', type: 'stock', logo: 'robinhood.svg' },
   'ARBNB': { name: 'Airbnb', apiSymbol: 'ABNB', type: 'stock', logo: 'airbnb.svg' },
 };
+
+const marketSymbolMap = {
+    'BTC-USD': 'BTC-USDC',
+    'ETH-USD': 'ETH-USDC',
+    'SOL-USD': 'SOL-USDC',
+    'DOGE-USD': 'DOGE-USDC',
+    'ADA-USD': 'ADA-USDC',
+    'META': 'META',
+    'PLTR': 'PLTR',
+    'TSLA': 'TSLA',
+    'NVDA': 'NVDA',
+    'SNOW': 'SNOW',
+    'UBER': 'UBER',
+    'RBNHD': 'HOOD',
+    'ARBNB': 'ABNB',
+  };
 
 const getStartDate = (range) => {
     const now = new Date();
@@ -91,6 +108,7 @@ const Markets = () => {
     const [filter, setFilter] = useState('All');
     const [searchTerm, setSearchTerm] = useState('');
     const [timeRange, setTimeRange] = useState('YTD');
+    const navigate = useNavigate();
 
     const fetchMarketData = useCallback(async (market, range) => {
         try {
@@ -217,10 +235,9 @@ const Markets = () => {
         fetchAllMarkets();
     }, [fetchMarketData, timeRange]);
 
-    const handleRowClick = (marketId) => {
-        // In a real app, you'd use React Router's useHistory or Link component
-        // For this example, we'll just log to console to show intent
-        console.log(`Navigating to trade page for ${marketId}`);
+    const handleTradeClick = (marketId) => {
+        const marketName = marketSymbolMap[marketId] || marketId;
+        navigate(`/trade/${marketName}`);
     };
 
     const filteredMarkets = markets.filter(market => {
@@ -337,7 +354,7 @@ const Markets = () => {
                         if (!market) return null;
                         const change = parseFloat(market.change);
                         return (
-                            <div key={market.id} className="market-row-grid" onClick={() => handleRowClick(market.id)}>
+                            <div key={market.id} className="market-row-grid">
                                 <div className="asset-cell">
                                     <img src={`/${market.logo}`} alt={market.name} className="asset-icon" />
                                     <div>
@@ -367,7 +384,7 @@ const Markets = () => {
                                     </div>
                                 </div>
                                 <div className="text-center">
-                                    <button className="markets-trade-btn" onClick={(e) => { e.stopPropagation(); handleRowClick(market.id); }}>Trade</button>
+                                    <button className="markets-trade-btn" onClick={(e) => { e.stopPropagation(); handleTradeClick(market.id); }}>Trade</button>
                                 </div>
                             </div>
                         );

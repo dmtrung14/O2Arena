@@ -1,5 +1,5 @@
 import React, { useState, useEffect, createContext, useContext } from 'react';
-import { BrowserRouter as Router, Route, Routes, useLocation, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useLocation, Navigate, useParams } from 'react-router-dom';
 import './App.css';
 import Header from './components/Header';
 import MarketSelector from './components/MarketSelector';
@@ -65,7 +65,7 @@ const markets = [
 ];
 
 // All available markets for search functionality
-const allAvailableMarkets = [
+export const allAvailableMarkets = [
   // Crypto
   { name: 'BTC-USDC', logo: '/bitcoin.svg', marketId: 4, symbol: 'BINANCE:BTCUSDT', type: 'crypto' },
   { name: 'ETH-USDC', logo: '/ethereum.svg', marketId: 3, symbol: 'BINANCE:ETHUSDT', type: 'crypto' },
@@ -84,6 +84,12 @@ const allAvailableMarkets = [
   { name: 'ABNB', logo: '/airbnb.svg', marketId: 15, symbol: 'NASDAQ:ABNB', type: 'stock' },
 ];
 
+const TradePageWrapper = () => {
+    const { symbol } = useParams();
+    const market = allAvailableMarkets.find(m => m.name === symbol);
+    return <TradePage selectedMarket={market} />;
+};
+
 function App() {
   const [selectedMarket, setSelectedMarket] = useState(markets[0]);
 
@@ -93,12 +99,13 @@ function App() {
         <div className="app">
           <Routes>
             <Route path="/" element={<LandingPage />} />
-            <Route path="/trade" element={
-              <>
-                <Header />
-                <TradePage selectedMarket={selectedMarket} />
-              </>
+            <Route path="/trade/:symbol" element={
+                <>
+                    <Header />
+                    <TradePageWrapper />
+                </>
             } />
+            <Route path="/trade" element={<Navigate to="/trade/BTC-USDC" />} />
             <Route path="/portfolio" element={
               <>
                 <Header />
