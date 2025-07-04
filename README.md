@@ -4,6 +4,8 @@
 
 [Oxygen](https://oxy-gen.vercel.app/) is a sophisticated crypto trading sandbox designed for developing and testing trading strategies in a simulated, real-time environment. It provides a feature-rich interface that mirrors professional trading platforms, powered by live market data and advanced trading capabilities.
 
+For an in-depth project analysis, see [Devin's analysis](https://deepwiki.com/dmtrung14/oxygen).
+
 ## ✨ Key Features
 
 Here's a breakdown of the features currently implemented in `oxygen`, and a few that are on our wishlist for the future.
