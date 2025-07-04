@@ -1,72 +1,69 @@
 <img src="./public/banner.png" style="width:100%" alt="Logo"/>
 
-# 🚀 O2 Arena - Advanced Crypto Trading Sandbox ⭐
+# 🚀 oxygen - Advanced Crypto Trading Sandbox ⭐
 
-O2 Arena is a sophisticated crypto trading sandbox designed for developing and testing trading strategies in a simulated, real-time environment. It provides a feature-rich interface that mirrors professional trading platforms, powered by live market data and advanced trading capabilities.
+`oxygen` is a sophisticated crypto trading sandbox designed for developing and testing trading strategies in a simulated, real-time environment. It provides a feature-rich interface that mirrors professional trading platforms, powered by live market data and advanced trading capabilities.
 
 ## ✨ Key Features
 
-### 🔐 **Advanced Authentication System**
-- **Multi-Provider Sign-In**: Google, Microsoft, and GitHub authentication
-- **Profile Management**: Complete user profiles with customizable avatars using DiceBear API
-- **Nickname Validation**: Real-time availability checking with unique nickname system
-- **Protected Routes**: Secure access control for authenticated features
+Here’s a breakdown of the features currently implemented in `oxygen`, and a few that are on our wishlist for the future.
 
-### 💼 **Multi-Subaccount Portfolio Management**
-- **Flexible Account Creation**: Create unlimited subaccounts with unique IDs
-- **Blockchain-Specific Portfolios**: USD, Bitcoin, Ethereum, and Solana networks
-- **Real-time Balance Tracking**: Live account value and PnL calculations
-- **Historical Data**: Daily value tracking and performance analytics
-- **Search & Filter**: Quick subaccount discovery and management
+#### 🔐 Advanced Authentication System
+- [x] **Multi-Provider Sign-In**: Google, Microsoft, and GitHub authentication.
+- [x] **Profile Management**: Complete user profiles with customizable avatars using DiceBear API.
+- [x] **Nickname Validation**: Real-time availability checking with a unique nickname system.
+- [x] **Protected Routes**: Secure access control for authenticated features.
+- [ ] **Two-Factor Authentication (2FA)**: For an extra layer of security.
 
-### 📊 **Professional Trading Interface**
-- **Advanced Order Types**: Market, Limit, Immediate or Cancel, Fill or Kill
-- **Leverage Trading**: Adjustable leverage from 1x to 10x with visual slider
-- **Order Options**: Reduce-Only and Post-Only order flags
-- **Smart Position Sizing**: Percentage-based position sizing with real-time calculations
-- **Real-time Price Feeds**: Live market data from multiple exchanges
+#### 💼 Multi-Subaccount Portfolio Management
+- [x] **Flexible Account Creation**: Create unlimited subaccounts with unique IDs.
+- [x] **Blockchain-Specific Portfolios**: USD, Bitcoin, Ethereum, and Solana networks.
+- [x] **Real-time Balance Tracking**: Live account value and PnL calculations.
+- [x] **Historical Data**: Daily value tracking and performance analytics.
+- [x] **Search & Filter**: Quickly find and manage subaccounts.
+- [ ] **CSV Export**: Export portfolio and trade history.
 
-### 🌐 **Real-time Market Data**
-- **WebSocket Integration**: Live order book updates from Binance and Coinbase
-- **TradingView Charts**: Professional charting with multiple timeframes
-- **Market Overview**: Comprehensive market statistics and 24h performance
-- **Order Book Visualization**: Depth charts with color-coded bid/ask levels
-- **Trade History**: Real-time trade execution tracking
+#### 📊 Professional Trading Interface
+- [x] **Advanced Order Types**: Market, Limit, Immediate or Cancel, Fill or Kill.
+- [x] **Leverage Trading**: Adjustable leverage from 1x to 10x with a visual slider.
+- [x] **Order Options**: Reduce-Only and Post-Only order flags.
+- [x] **Smart Position Sizing**: Percentage-based position sizing with real-time calculations.
+- [x] **Real-time Price Feeds**: Live market data from multiple exchanges.
+- [ ] **Trailing Stop Orders**: Advanced order type for risk management.
 
-### 🎨 **Modern UI/UX Design**
-- **Responsive Design**: Optimized for desktop, tablet, and mobile devices
-- **Dark Theme**: Professional dark interface with gradient backgrounds
-- **Smooth Animations**: Fluid transitions and hover effects
-- **Loading States**: Elegant loading spinners and skeleton screens
-- **Error Handling**: User-friendly error messages and validation
+#### 🌐 Real-time Market Data & Visualization
+- [x] **WebSocket Integration**: Live order book updates from Binance and Coinbase.
+- [x] **TradingView Charts**: Professional charting with multiple timeframes.
+- [x] **Market Overview**: Comprehensive market statistics and 24h performance.
+- [x] **Order Book Visualization**: Depth charts with color-coded bid/ask levels.
+- [x] **Trade History**: Real-time trade execution tracking.
 
-### 📈 **Comprehensive Market Coverage**
-- **Crypto Assets**: BTC, ETH, SOL, DOGE, ADA with USDC pairs
-- **Stock Markets**: TSLA, NVDA, META, and other major stocks
-- **Real-time Charts**: Interactive price charts with technical indicators
-- **Market Statistics**: Volume, market cap, and price change data
+#### 🎨 Modern UI/UX Design
+- [x] **Responsive Design**: Optimized for desktop, tablet, and mobile devices.
+- [x] **Dark Theme**: Professional dark interface with gradient backgrounds.
+- [x] **Smooth Animations**: Fluid transitions and hover effects.
+- [x] **Loading States**: Elegant loading spinners and skeleton screens.
+- [x] **Error Handling**: User-friendly error messages and validation.
+
+#### 📈 Comprehensive Market Coverage
+- [x] **Crypto Assets**: BTC, ETH, SOL, DOGE, ADA with USDC pairs.
+- [x] **Stock Markets**: TSLA, NVDA, META, and other major stocks.
+- [x] **Real-time Charts**: Interactive price charts with technical indicators.
+- [x] **Market Statistics**: Volume, market cap, and price change data.
 
 ## 🛠️ Built With
 
-### Frontend
-- **React 18** - Modern React with hooks and context
-- **Firebase** - Authentication and real-time database
-- **TradingView Widget** - Professional charting
-- **Recharts** - Custom chart components
-- **React Icons** - Icon library
-- **CSS3** - Advanced styling with gradients and animations
+| Category         | Technologies                                                               |
+| ---------------- | -------------------------------------------------------------------------- |
+| **Frontend**     | `React 18`, `Firebase`, `TradingView Widget`, `Recharts`, `React Icons`, `CSS3` |
+| **Backend**      | `Node.js`, `Express.js`, `WebSocket`, `Firebase Firestore`, `Yahoo Finance API` |
+| **Infrastructure**| `Vercel`, `Firebase Hosting`, `API Proxy`                                    |
 
-### Backend
-- **Node.js** - Server-side runtime
-- **Express.js** - Web framework
-- **WebSocket** - Real-time data streaming
-- **Firebase Firestore** - NoSQL database
-- **Yahoo Finance API** - Market data provider
+## 🔧 Technical Architecture
 
-### Infrastructure
-- **Vercel** - Frontend deployment and hosting
-- **Firebase Hosting** - Alternative deployment option
-- **API Proxy** - CORS-free data fetching
+The following diagram illustrates the high-level architecture of the `oxygen` platform, showing the flow of data between the frontend, backend services, and external APIs.
+
+![Technical Architecture](https://mermaid.ink/svg/pako:eNqNVMtqwzAQ_JdCch9sHDttu-yhhx54KAXyEEyJrSW2LMnKSbrvXblJ06GHXhgyM29m3kxiRh8UaIJO6Cq1a5-gI4Y2Wj9pG2F9N6cQy6oV8A41kZ6J3sK-M-o5Vw_sFk-QoX3Q6-8C372m69QjJ1t9gKk83sN7lJ5Kdo9y3xV6W-8n_Eem18e_Bf-dG7VwUu-Q6hD7Qy2E4BDBwA5oI0VnQGk0H5XQ26K1JtUaT8WkKzUaYvU3lXo3-jJq1l-J2sEGFm7_U2HwzCgJgD-SgqR-uDk38pUa52i1K1XG3kQx2tL9K9vQjX3lG7yC6W_XGvj-U3t3rW7lO7iG6h-3P9iV5B96E3aYp8rVwB5c5w92q-hX6A-2w9B3bT4hL4d9Dq1G_Fw604N8HqY_R5oV_R-g8tF9BfM-kX0H8z6R_QfzPpF9B_M-kX0H8z6R_QfzPpF9B-M-U9VlY)
 
 ## 🚀 Deployment
 
@@ -113,8 +110,8 @@ COINBASE_PRODUCT=BTC-USD
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/dmtrung14/O2Arena.git
-   cd O2Arena
+   git clone https://github.com/dmtrung14/oxygen.git
+   cd oxygen
    ```
 
 2. **Install dependencies**
@@ -137,51 +134,6 @@ COINBASE_PRODUCT=BTC-USD
    npm start
    ```
 
-## 📱 Features Overview
-
-### Landing Page
-- **Animated Background**: Multi-layered scrolling logo animation
-- **Responsive Design**: Optimized for all screen sizes
-- **Smooth Navigation**: Seamless transition to trading interface
-
-### Trading Interface
-- **Market Selector**: Quick switching between different assets
-- **Order Book**: Real-time depth visualization
-- **Trade Form**: Advanced order placement with validation
-- **Portfolio Overview**: Real-time account balance and positions
-
-### Portfolio Management
-- **Subaccount Creation**: Easy setup with blockchain selection
-- **Performance Tracking**: Historical PnL and account value charts
-- **Position Management**: View and manage open positions
-- **Order History**: Complete trade execution records
-
-### Markets Page
-- **Market Overview**: Comprehensive asset listing
-- **Price Charts**: Interactive mini-charts for each asset
-- **Filtering Options**: Search and filter by asset type
-- **Quick Trading**: Direct navigation to trading interface
-
-## 🔧 Technical Architecture
-
-### Frontend Architecture
-- **Component-Based**: Modular React components
-- **Context API**: Global state management
-- **Custom Hooks**: Reusable logic encapsulation
-- **Responsive Design**: Mobile-first approach
-
-### Backend Architecture
-- **WebSocket Server**: Real-time data streaming
-- **REST API**: Traditional HTTP endpoints
-- **Order Book Engine**: Matching engine simulation
-- **Market Data Integration**: Multi-source data aggregation
-
-### Data Flow
-1. **Market Data**: WebSocket connections to exchanges
-2. **User Actions**: Firebase authentication and data storage
-3. **Order Processing**: Real-time order matching and execution
-4. **Portfolio Updates**: Live balance and position tracking
-
 ## 🤝 Contributing
 
 1. Fork the repository
@@ -192,13 +144,13 @@ COINBASE_PRODUCT=BTC-USD
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
 
 ## 👨‍💻 Contact
 
 **dmtrung14** - [@dmtrung14](https://github.com/dmtrung14)
 
-**Project Link**: [https://github.com/dmtrung14/O2Arena](https://github.com/dmtrung14/O2Arena)
+**Project Link**: [https://github.com/dmtrung14/oxygen](https://github.com/dmtrung14/oxygen)
 
 **Live Demo**: [Deployed on Vercel](https://your-vercel-url.vercel.app)
 
