@@ -6,7 +6,7 @@
 
 ## ✨ Key Features
 
-Here’s a breakdown of the features currently implemented in `oxygen`, and a few that are on our wishlist for the future.
+Here's a breakdown of the features currently implemented in `oxygen`, and a few that are on our wishlist for the future.
 
 #### 🔐 Advanced Authentication System
 - [x] **Multi-Provider Sign-In**: Google, Microsoft, and GitHub authentication.
@@ -63,7 +63,38 @@ Here’s a breakdown of the features currently implemented in `oxygen`, and a fe
 
 The following diagram illustrates the high-level architecture of the `oxygen` platform, showing the flow of data between the frontend, backend services, and external APIs.
 
-![Technical Architecture](https://mermaid.ink/svg/pako:eNqNVMtqwzAQ_JdCch9sHDttu-yhhx54KAXyEEyJrSW2LMnKSbrvXblJ06GHXhgyM29m3kxiRh8UaIJO6Cq1a5-gI4Y2Wj9pG2F9N6cQy6oV8A41kZ6J3sK-M-o5Vw_sFk-QoX3Q6-8C372m69QjJ1t9gKk83sN7lJ5Kdo9y3xV6W-8n_Eem18e_Bf-dG7VwUu-Q6hD7Qy2E4BDBwA5oI0VnQGk0H5XQ26K1JtUaT8WkKzUaYvU3lXo3-jJq1l-J2sEGFm7_U2HwzCgJgD-SgqR-uDk38pUa52i1K1XG3kQx2tL9K9vQjX3lG7yC6W_XGvj-U3t3rW7lO7iG6h-3P9iV5B96E3aYp8rVwB5c5w92q-hX6A-2w9B3bT4hL4d9Dq1G_Fw604N8HqY_R5oV_R-g8tF9BfM-kX0H8z6R_QfzPpF9B_M-kX0H8z6R_QfzPpF9B-M-U9VlY)
+```mermaid
+graph TD
+    subgraph User
+        A[Browser]
+    end
+
+    subgraph "Frontend (Vercel)"
+        B[React App]
+        C[Firebase SDK]
+        D[WebSocket Client]
+    end
+
+    subgraph "Backend Services"
+        E[API Proxy]
+        F[Node.js WebSocket Server]
+    end
+
+    subgraph "External APIs"
+        G[Firebase Auth & Firestore]
+        H[Binance & Coinbase APIs]
+        I[Yahoo Finance API]
+    end
+
+    A -- "HTTPS" --> B;
+    B -- "Uses" --> C;
+    B -- "Uses" --> D;
+    B -- "API Calls" --> E;
+    C -- "Auth & DB" --> G;
+    D -- "Real-time Data" --> F;
+    F -- "Connects to" --> H;
+    E -- "Forwards to" --> I;
+```
 
 ## 🚀 Deployment
 
