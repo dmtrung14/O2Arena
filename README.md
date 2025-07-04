@@ -326,7 +326,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 [**📊 Launch Platform**](https://oxy-gen.vercel.app/) | [**📖 Project Wiki**](https://deepwiki.com/dmtrung14/oxygen) | [**📚 Deployment Guide**](./DEPLOYMENT.md) | [**🤝 Contribute**](./CONTRIBUTING.md)
 
-**Built with ❤️ by the Oxygen Team**
+**Built with ❤️‍🔥 by dmtrung14**
 
 ⭐ **Star this repository if you found it helpful!** ⭐
 
