@@ -1,21 +1,20 @@
 <img src="./public/banner.png" style="width:100%" alt="Logo"/>
 
-# 🚀 oxygen - Advanced Crypto Trading Sandbox ⭐
+# 🚀 oxygen - Advanced Trading Sandbox ⭐
 
-[Oxygen](https://oxy-gen.vercel.app/) is a sophisticated crypto trading sandbox designed for developing and testing trading strategies in a simulated, real-time environment. It provides a feature-rich interface that mirrors professional trading platforms, powered by live market data and advanced trading capabilities.
+[Oxygen](https://oxy-gen.vercel.app/) is a sophisticated trading sandbox designed for developing and testing trading strategies in a simulated, real-time environment. It provides a feature-rich interface that mirrors professional trading platforms, powered by live market data and advanced trading capabilities.
 
 For an in-depth project analysis, see [Devin's analysis](https://deepwiki.com/dmtrung14/oxygen).
 
 ## ✨ Key Features
 
-Here's a breakdown of the features currently implemented in `oxygen`, and a few that are on our wishlist for the future.
+Here's a breakdown of the features currently implemented in `oxygen`.
 
 #### 🔐 Advanced Authentication System
 - [x] **Multi-Provider Sign-In**: Google, Microsoft, and GitHub authentication.
 - [x] **Profile Management**: Complete user profiles with customizable avatars using DiceBear API.
 - [x] **Nickname Validation**: Real-time availability checking with a unique nickname system.
 - [x] **Protected Routes**: Secure access control for authenticated features.
-- [ ] **Two-Factor Authentication (2FA)**: For an extra layer of security.
 
 #### 💼 Multi-Subaccount Portfolio Management
 - [x] **Flexible Account Creation**: Create unlimited subaccounts with unique IDs.
@@ -23,18 +22,15 @@ Here's a breakdown of the features currently implemented in `oxygen`, and a few 
 - [x] **Real-time Balance Tracking**: Live account value and PnL calculations.
 - [x] **Historical Data**: Daily value tracking and performance analytics.
 - [x] **Search & Filter**: Quickly find and manage subaccounts.
-- [ ] **CSV Export**: Export portfolio and trade history.
 
 #### 📊 Professional Trading Interface
-- [x] **Advanced Order Types**: Market, Limit, Immediate or Cancel, Fill or Kill.
+- [x] **Advanced Order Types**: Market and Limit orders.
 - [x] **Leverage Trading**: Adjustable leverage from 1x to 10x with a visual slider.
-- [x] **Order Options**: Reduce-Only and Post-Only order flags.
 - [x] **Smart Position Sizing**: Percentage-based position sizing with real-time calculations.
-- [x] **Real-time Price Feeds**: Live market data from multiple exchanges.
-- [ ] **Trailing Stop Orders**: Advanced order type for risk management.
+- [x] **Real-time Price Feeds**: Live market data from multiple sources.
 
 #### 🌐 Real-time Market Data & Visualization
-- [x] **WebSocket Integration**: Live order book updates from Binance and Coinbase.
+- [x] **WebSocket Integration**: Live order book updates.
 - [x] **TradingView Charts**: Professional charting with multiple timeframes.
 - [x] **Market Overview**: Comprehensive market statistics and 24h performance.
 - [x] **Order Book Visualization**: Depth charts with color-coded bid/ask levels.
@@ -84,7 +80,6 @@ graph TD
 
     subgraph "External APIs"
         G[Firebase Auth & Firestore]
-        H[Binance & Coinbase APIs]
         I[Yahoo Finance API]
     end
 
@@ -94,7 +89,6 @@ graph TD
     B -- "API Calls" --> E;
     C -- "Auth & DB" --> G;
     D -- "Real-time Data" --> F;
-    F -- "Connects to" --> H;
     E -- "Forwards to" --> I;
 ```
 
@@ -125,11 +119,6 @@ REACT_APP_FIREBASE_PROJECT_ID=your_project_id
 REACT_APP_FIREBASE_STORAGE_BUCKET=your_storage_bucket
 REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 REACT_APP_FIREBASE_APP_ID=your_app_id
-
-# Trading Engine (Optional)
-REACT_APP_ENGINE_URL=your_engine_url
-ENABLE_BINANCE=true
-COINBASE_PRODUCT=BTC-USD
 ```
 
 ## 🏃‍♂️ Getting Started
@@ -162,7 +151,7 @@ COINBASE_PRODUCT=BTC-USD
 
 5. **Start the backend server** (optional, for full functionality)
    ```bash
-   cd backend
+   cd server
    npm install
    npm start
    ```

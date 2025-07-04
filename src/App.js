@@ -53,45 +53,41 @@ const AuthProvider = ({ children }) => {
   );
 };
 
-const markets = [
-  { name: 'BTC-USDC', logo: '/bitcoin.svg', marketId: 4, symbol: 'BINANCE:BTCUSDT' },
-  { name: 'ETH-USDC', logo: '/ethereum.svg', marketId: 3, symbol: 'BINANCE:ETHUSDT' },
-  { name: 'SOL-USDC', logo: '/solana.svg', marketId: 5, symbol: 'BINANCE:SOLUSDT' },
-  { name: 'DOGE-USDC', logo: '/dogecoin.svg', marketId: 6, symbol: 'BINANCE:DOGEUSDT' },
-  { name: 'ADA-USDC', logo: '/cardano.svg', marketId: 7, symbol: 'BINANCE:ADAUSDT' },
-  { name: 'TSLA', logo: '/tesla.svg', marketId: 8, symbol: 'NASDAQ:TSLA' },
-  { name: 'NVDA', logo: '/nvidia.svg', marketId: 9, symbol: 'NASDAQ:NVDA' },
-  { name: 'META', logo: '/meta.svg', marketId: 10, symbol: 'NASDAQ:META' },
+const popularMarkets = [
+  { name: 'BTC-USDC', logo: '/bitcoin.svg', marketId: 4 },
+  { name: 'ETH-USDC', logo: '/ethereum.svg', marketId: 3 },
+  { name: 'SOL-USDC', logo: '/solana.svg', marketId: 5 },
+  { name: 'DOGE-USDC', logo: '/dogecoin.svg', marketId: 6 },
+  { name: 'ADA-USDC', logo: '/cardano.svg', marketId: 7 },
+  { name: 'TSLA', logo: '/tesla.svg', marketId: 8 },
 ];
 
-// All available markets for search functionality
-export const allAvailableMarkets = [
+const allAssets = [
   // Crypto
-  { name: 'BTC-USDC', logo: '/bitcoin.svg', marketId: 4, symbol: 'BINANCE:BTCUSDT', type: 'crypto' },
-  { name: 'ETH-USDC', logo: '/ethereum.svg', marketId: 3, symbol: 'BINANCE:ETHUSDT', type: 'crypto' },
-  { name: 'SOL-USDC', logo: '/solana.svg', marketId: 5, symbol: 'BINANCE:SOLUSDT', type: 'crypto' },
-  { name: 'DOGE-USDC', logo: '/dogecoin.svg', marketId: 6, symbol: 'BINANCE:DOGEUSDT', type: 'crypto' },
-  { name: 'ADA-USDC', logo: '/cardano.svg', marketId: 7, symbol: 'BINANCE:ADAUSDT', type: 'crypto' },
-  
+  { name: 'BTC-USDC', logo: '/bitcoin.svg', marketId: 4, type: 'crypto' },
+  { name: 'ETH-USDC', logo: '/ethereum.svg', marketId: 3, type: 'crypto' },
+  { name: 'SOL-USDC', logo: '/solana.svg', marketId: 5, type: 'crypto' },
+  { name: 'DOGE-USDC', logo: '/dogecoin.svg', marketId: 6, type: 'crypto' },
+  { name: 'ADA-USDC', logo: '/cardano.svg', marketId: 7, type: 'crypto' },
   // Stocks
-  { name: 'TSLA', logo: '/tesla.svg', marketId: 8, symbol: 'NASDAQ:TSLA', type: 'stock' },
-  { name: 'NVDA', logo: '/nvidia.svg', marketId: 9, symbol: 'NASDAQ:NVDA', type: 'stock' },
-  { name: 'META', logo: '/meta.svg', marketId: 10, symbol: 'NASDAQ:META', type: 'stock' },
-  { name: 'PLTR', logo: '/palantir.svg', marketId: 11, symbol: 'NYSE:PLTR', type: 'stock' },
-  { name: 'SNOW', logo: '/snowflake.svg', marketId: 12, symbol: 'NYSE:SNOW', type: 'stock' },
-  { name: 'UBER', logo: '/uber.svg', marketId: 13, symbol: 'NYSE:UBER', type: 'stock' },
-  { name: 'HOOD', logo: '/robinhood.svg', marketId: 14, symbol: 'NASDAQ:HOOD', type: 'stock' },
-  { name: 'ABNB', logo: '/airbnb.svg', marketId: 15, symbol: 'NASDAQ:ABNB', type: 'stock' },
+  { name: 'TSLA', logo: '/tesla.svg', marketId: 8, type: 'stock' },
+  { name: 'NVDA', logo: '/nvidia.svg', marketId: 9, type: 'stock' },
+  { name: 'META', logo: '/meta.svg', marketId: 10, type: 'stock' },
+  { name: 'PLTR', logo: '/palantir.svg', marketId: 11, type: 'stock' },
+  { name: 'SNOW', logo: '/snowflake.svg', marketId: 12, type: 'stock' },
+  { name: 'UBER', logo: '/uber.svg', marketId: 13, type: 'stock' },
+  { name: 'HOOD', logo: '/robinhood.svg', marketId: 14, type: 'stock' },
+  { name: 'ABNB', logo: '/airbnb.svg', marketId: 15, type: 'stock' },
 ];
 
 const TradePageWrapper = () => {
     const { symbol } = useParams();
-    const market = allAvailableMarkets.find(m => m.name === symbol);
+    const market = allAssets.find(m => m.name === symbol);
     return <TradePage selectedMarket={market} />;
 };
 
 function App() {
-  const [selectedMarket, setSelectedMarket] = useState(markets[0]);
+  const [selectedMarket, setSelectedMarket] = useState(popularMarkets[0]);
 
   return (
     <Router>

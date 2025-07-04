@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './OrderBook.css';
+import { API_CONFIG, getDepthUrl, getDepthWsUrl } from '../config/api';
 
 function OrderBook({ selectedMarket }) {
   const [activeTab, setActiveTab] = useState('orderbook');
@@ -60,7 +61,7 @@ function OrderBook({ selectedMarket }) {
       
       try {
         const marketId = selectedMarket.marketId || 4; // Default to BTC
-        const response = await fetch(`http://localhost:4000/api/depth?market_id=${marketId}`);
+        const response = await fetch(getDepthUrl(marketId));
         
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
@@ -84,17 +85,8 @@ function OrderBook({ selectedMarket }) {
         return;
       }
 
-      let base;
-      if (process.env.REACT_APP_ENGINE_URL) {
-        base = process.env.REACT_APP_ENGINE_URL.replace(/^http/, 'ws');
-      } else if (window.location.port === '3000') {
-        base = 'ws://localhost:4000';
-      } else {
-        base = window.location.origin.replace(/^http/, 'ws');
-      }
-
       const marketId = selectedMarket.marketId || 4;
-      const url = `${base}/ws/depth?market_id=${marketId}`;
+      const url = getDepthWsUrl(marketId);
       console.log(`[OrderBook] Connecting to WebSocket for ${selectedMarket.name} (ID: ${marketId}):`, url);
       
       try {

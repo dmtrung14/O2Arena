@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 
-function Chart({ selectedMarket }) {
+function Chart({ market }) {
   const container = useRef(null);
 
   useEffect(() => {
-    if (container.current && selectedMarket && selectedMarket.symbol) {
+    if (container.current && market) {
       // Clear any existing widget
       container.current.innerHTML = '';
       
@@ -14,7 +14,7 @@ function Chart({ selectedMarket }) {
       script.onload = () => {
         new window.TradingView.widget({
           autosize: true,
-          symbol: selectedMarket.symbol,
+          symbol: market,
           interval: '60',
           timezone: 'Etc/UTC',
           theme: 'dark',
@@ -24,7 +24,7 @@ function Chart({ selectedMarket }) {
           enable_publishing: false,
           hide_top_toolbar: false,
           hide_legend: false,
-          container_id: container.current.id,
+          container_id: 'tradingview_chart_container',
           overrides: {
               "paneProperties.background": "#000000",
               "paneProperties.vertGridProperties.color": "#2A2E39",
@@ -36,7 +36,7 @@ function Chart({ selectedMarket }) {
       };
       container.current.appendChild(script);
     }
-  }, [selectedMarket]);
+  }, [market]);
 
   return (
     <div 

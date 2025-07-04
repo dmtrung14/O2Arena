@@ -10,9 +10,7 @@ const orderOwner = new Map();
 // userId -> Set<WebSocket>
 const privateClients = new Map();
 
-const { placeOrder, cancelOrder, depth, ready, getMarketFromId } = require('./orderBook');
-const binanceWorker = require('./binanceWorker');
-const coinbaseWorker = require('./coinbaseWorker');
+const { placeOrder, cancelOrder, depth, ready, getMarketFromId, getUserOrders } = require('./orderBook');
 
 const PORT = process.env.PORT || 4000;
 
@@ -51,6 +49,19 @@ app.post('/api/orders', async (req, res) => {
     orderOwner.set(id, userId);
     processMatches(result);
     res.json({ id, result });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/orders', async (req, res) => {
+  try {
+    const userId = req.headers['x-user-id'];
+    if (!userId) return res.status(401).json({ error: 'Missing X-User-Id header' });
+
+    const userOrders = getUserOrders(userId, orderOwner);
+    console.log(`[API] Fetched ${userOrders.length} pending orders for user ${userId}`);
+    res.json({ orders: userOrders });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -173,16 +184,6 @@ function processMatches(result) {
 }
 
 setInterval(broadcastDepth, 1000); // every second
-
-// Start external workers
-ready.then(() => {
-  console.log('[Server] OrderBook ready, starting external data workers...');
-  if (process.env.ENABLE_BINANCE === 'true') {
-    binanceWorker.start();
-  } else {
-    coinbaseWorker.start();
-  }
-});
 
 server.listen(PORT, () => {
   console.log(`Matching engine server listening on http://localhost:${PORT}`);

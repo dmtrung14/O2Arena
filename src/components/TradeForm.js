@@ -6,6 +6,7 @@ import { useAuth } from '../App';
 import { useSubaccount } from '../context/SubaccountContext';
 import { db } from '../firebase';
 import { collection, doc, getDocs, updateDoc, arrayUnion, query } from 'firebase/firestore';
+import { API_CONFIG, getDepthUrl } from '../config/api';
 
 const advancedOrderTypes = ['None', 'Immediate or Cancel', 'Fill or Kill'];
 
@@ -42,8 +43,8 @@ function TradeForm({ selectedMarket }) {
     
     const fetchPrice = async () => {
       try {
-        // Use our local orderbook instead of external API
-        const response = await fetch(`http://localhost:4000/api/depth?market_id=${selectedMarket.marketId}`);
+        // Use our matching engine API
+        const response = await fetch(getDepthUrl(selectedMarket.marketId));
         const data = await response.json();
         if (data.asks && data.asks.length > 0 && data.bids && data.bids.length > 0) {
           const midPrice = (data.asks[0][0] + data.bids[0][0]) / 2;
@@ -55,7 +56,7 @@ function TradeForm({ selectedMarket }) {
           }
         }
       } catch (error) {
-        console.error('Error fetching price from local orderbook:', error);
+        console.error('Error fetching price from matching engine:', error);
         console.log('Falling back to mock price based on market');
         
         // Fallback to mock prices if local server is not available
@@ -178,18 +179,23 @@ function TradeForm({ selectedMarket }) {
     if (!user || !selectedSubaccount || !selectedMarket || isExecutingTrade) return;
     
     const amount = parseFloat(amountInput);
-    const price = orderType === 'market' ? currentPrice : parseFloat(priceInput);
+    const price = orderType === 'market' ? undefined : parseFloat(priceInput);
     
-    if (!amount || amount <= 0 || !price || price <= 0) {
-      alert('Please enter valid amount and price');
+    if (!amount || amount <= 0) {
+      alert('Please enter valid amount');
       return;
     }
 
-    const orderValue = price * amount;
+    if (orderType === 'limit' && (!price || price <= 0)) {
+      alert('Please enter valid price for limit order');
+      return;
+    }
+
+    const estimatedValue = (price || currentPrice) * amount;
     const availableBalance = getAvailableBalance();
     
     // Validate sufficient balance
-    if (direction === 'buy' && orderValue > availableBalance) {
+    if (direction === 'buy' && estimatedValue > availableBalance) {
       alert('Insufficient balance for this trade');
       return;
     }
@@ -202,94 +208,139 @@ function TradeForm({ selectedMarket }) {
     setIsExecutingTrade(true);
 
     try {
+      // Prepare order for matching engine
+      const orderPayload = {
+        side: direction,
+        size: amount,
+        type: orderType,
+        market: selectedMarket.name
+      };
+      
+      // Add price for limit orders
+      if (orderType === 'limit') {
+        orderPayload.price = price;
+      }
+
+      console.log('[TradeForm] Sending order to matching engine:', orderPayload);
+
+      // Send order to matching engine
+      const response = await fetch(API_CONFIG.ORDERS_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-User-Id': user.uid // Use Firebase user ID
+        },
+        body: JSON.stringify(orderPayload)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Order failed: ${response.status} ${response.statusText}`);
+      }
+
+      const orderResult = await response.json();
+      console.log('[TradeForm] Order result:', orderResult);
+
+      // Process the order result
+      const { result } = orderResult;
+      const { done, pending, partial } = result;
+
+      // Update Firebase based on actual trades
       const subaccountRef = doc(db, 'portfolios', user.uid, 'subaccounts', selectedSubaccount.id);
       const assetSymbol = selectedMarket.name.split('-')[0];
       
-      // Create trade record
-      const trade = {
-        id: doc(collection(db, 'temp')).id,
-        symbol: selectedMarket.name,
-        asset: assetSymbol,
-        side: direction,
-        type: orderType,
-        amount,
-        price,
-        value: orderValue,
-        timestamp: new Date().toISOString(),
-        status: 'filled'
-      };
-
-      // Calculate new balance and positions
       let newBalance = selectedSubaccount.balance || 0;
       let newPositions = [...(selectedSubaccount.positions || [])];
-      
-      if (direction === 'buy') {
-        // Deduct cash, add position
-        newBalance -= orderValue;
-        
-        const existingPosition = newPositions.find(p => p.symbol === assetSymbol);
-        if (existingPosition) {
-          const totalValue = (existingPosition.size * existingPosition.avgPrice) + orderValue;
-          const totalSize = existingPosition.size + amount;
-          existingPosition.size = totalSize;
-          existingPosition.avgPrice = totalValue / totalSize;
-        } else {
-          newPositions.push({
-            symbol: assetSymbol,
-            size: amount,
-            avgPrice: price,
-            side: 'long'
-          });
-        }
-      } else {
-        // Add cash, reduce position
-        newBalance += orderValue;
-        
-        const positionIndex = newPositions.findIndex(p => p.symbol === assetSymbol);
-        if (positionIndex !== -1) {
-          newPositions[positionIndex].size -= amount;
-          if (newPositions[positionIndex].size <= 0) {
-            newPositions.splice(positionIndex, 1);
+      let tradeRecords = [];
+
+      // Process filled trades
+      if (done && done.length > 0) {
+        for (const trade of done) {
+          const tradeValue = trade.price * trade.size;
+          
+          // Create trade record
+          const tradeRecord = {
+            id: trade.takerOrderId || trade.makerOrderId,
+            symbol: selectedMarket.name,
+            asset: assetSymbol,
+            side: direction,
+            type: orderType,
+            amount: trade.size,
+            price: trade.price,
+            value: tradeValue,
+            timestamp: new Date(trade.timestamp).toISOString(),
+            status: 'filled',
+            matchingEngineId: orderResult.id
+          };
+          
+          tradeRecords.push(tradeRecord);
+
+          // Update balance and positions
+          if (direction === 'buy') {
+            // Deduct cash, add position
+            newBalance -= tradeValue;
+            
+            const existingPosition = newPositions.find(p => p.symbol === assetSymbol);
+            if (existingPosition) {
+              const totalValue = (existingPosition.size * existingPosition.avgPrice) + tradeValue;
+              const totalSize = existingPosition.size + trade.size;
+              existingPosition.size = totalSize;
+              existingPosition.avgPrice = totalValue / totalSize;
+            } else {
+              newPositions.push({
+                symbol: assetSymbol,
+                size: trade.size,
+                avgPrice: trade.price,
+                side: 'long'
+              });
+            }
+          } else {
+            // Add cash, reduce position
+            newBalance += tradeValue;
+            
+            const positionIndex = newPositions.findIndex(p => p.symbol === assetSymbol);
+            if (positionIndex !== -1) {
+              newPositions[positionIndex].size -= trade.size;
+              if (newPositions[positionIndex].size <= 0) {
+                newPositions.splice(positionIndex, 1);
+              }
+            }
           }
         }
       }
 
+      // Handle pending orders (for limit orders that didn't match)
+      if (pending) {
+        console.log('[TradeForm] Order is pending in matching engine:', pending.id);
+        
+        // Could optionally store pending order info in Firebase for tracking
+        // For now, just notify the user
+      }
+
       // Calculate new account value
       let newAccountValue = newBalance;
-      
-      // Get current prices for all positions
       for (const position of newPositions) {
-        // Use the position's current market price, not just the selectedMarket price
-        let positionPrice = currentPrice; // Default to current market price
-        
-        // For different assets, we should ideally fetch their individual prices
-        // For now, use the current price if it's the same asset as selected market
+        let positionPrice = currentPrice;
         const selectedAsset = selectedMarket.name.split('-')[0];
         if (position.symbol === selectedAsset) {
           positionPrice = currentPrice;
         } else {
-          // For other assets, use stored average price as approximation
           positionPrice = position.avgPrice || currentPrice;
         }
-        
-        const positionValue = position.size * positionPrice;
-        newAccountValue += positionValue;
-        
-        console.log(`[Portfolio] Position ${position.symbol}: ${position.size} @ $${positionPrice} = $${positionValue}`);
+        newAccountValue += position.size * positionPrice;
       }
-      
-      console.log(`[Portfolio] New account value calculation:`);
-      console.log(`  Cash balance: $${newBalance}`);
-      console.log(`  Total account value: $${newAccountValue}`);
-      console.log(`  Positions:`, newPositions);
 
       // Update Firestore
-      await updateDoc(subaccountRef, {
+      const updateData = {
         balance: newBalance,
         accountValue: newAccountValue,
-        positions: newPositions,
-        tradeHistory: arrayUnion(trade)
-      });
+        positions: newPositions
+      };
+
+      if (tradeRecords.length > 0) {
+        updateData.tradeHistory = arrayUnion(...tradeRecords);
+      }
+
+      await updateDoc(subaccountRef, updateData);
 
       // Update context state
       const updatedSubaccount = {
@@ -297,21 +348,28 @@ function TradeForm({ selectedMarket }) {
         balance: newBalance,
         accountValue: newAccountValue,
         positions: newPositions,
-        tradeHistory: [...(selectedSubaccount.tradeHistory || []), trade]
+        tradeHistory: [...(selectedSubaccount.tradeHistory || []), ...tradeRecords]
       };
       
-      // Update the subaccount in context (this updates both the list and selected subaccount)
       updateSubaccount(updatedSubaccount);
 
       // Clear form
       setAmountInput('');
       setSliderValue(0);
       
-      alert(`${direction.toUpperCase()} order executed successfully!`);
+      // Show appropriate success message
+      if (done && done.length > 0) {
+        const totalFilled = done.reduce((sum, trade) => sum + trade.size, 0);
+        alert(`Order executed! Filled: ${totalFilled} ${assetSymbol} across ${done.length} trade(s)`);
+      } else if (pending) {
+        alert(`Limit order placed successfully! Order ID: ${pending.id}`);
+      } else {
+        alert('Order processed successfully!');
+      }
       
     } catch (error) {
       console.error('Error executing trade:', error);
-      alert('Error executing trade. Please try again.');
+      alert(`Error executing trade: ${error.message}`);
     } finally {
       setIsExecutingTrade(false);
     }

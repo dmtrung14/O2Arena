@@ -5,6 +5,7 @@ import { db } from '../firebase';
 import { collection, doc, getDocs, setDoc, query, updateDoc } from 'firebase/firestore';
 import LoadingSpinner from '../components/LoadingSpinner';
 import CreateSubaccountModal from '../components/CreateSubaccountModal';
+import { API_CONFIG } from '../config/api';
 
 const Portfolio = () => {
     const { user } = useAuth();
@@ -14,6 +15,8 @@ const Portfolio = () => {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [activeTab, setActiveTab] = useState('overview');
     const [searchQuery, setSearchQuery] = useState('');
+    const [pendingOrders, setPendingOrders] = useState([]);
+    const [ordersLoading, setOrdersLoading] = useState(false);
 
     useEffect(() => {
         if (!user) {
@@ -21,6 +24,7 @@ const Portfolio = () => {
             return;
         }
         fetchSubaccounts();
+        fetchPendingOrders();
     }, [user]);
 
     // Calculate PnL based on historical data
@@ -84,6 +88,34 @@ const Portfolio = () => {
         setLoading(false);
     };
 
+    const fetchPendingOrders = async () => {
+        if (!user) return;
+        
+        setOrdersLoading(true);
+        try {
+            const response = await fetch(API_CONFIG.ORDERS_URL, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-User-Id': user.uid
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`Failed to fetch orders: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log('[Portfolio] Fetched pending orders:', data.orders);
+            setPendingOrders(data.orders || []);
+        } catch (error) {
+            console.error('Error fetching pending orders:', error);
+            setPendingOrders([]);
+        } finally {
+            setOrdersLoading(false);
+        }
+    };
+
     const handleCreateSubaccount = async (newSubaccountData) => {
         if (!user) return;
         const subaccountDocRef = doc(db, 'portfolios', user.uid, 'subaccounts', newSubaccountData.id);
@@ -101,6 +133,34 @@ const Portfolio = () => {
             fetchSubaccounts();
         } catch (error) {
             console.error("Error creating subaccount:", error);
+        }
+    };
+
+    const handleCancelOrder = async (orderId, market) => {
+        if (!user) return;
+        
+        try {
+            const response = await fetch(`${API_CONFIG.ORDERS_URL}/${orderId}?market=${market}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-User-Id': user.uid
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`Failed to cancel order: ${response.status}`);
+            }
+
+            const result = await response.json();
+            console.log('[Portfolio] Order cancelled:', result);
+            
+            // Refresh pending orders
+            fetchPendingOrders();
+            alert('Order cancelled successfully!');
+        } catch (error) {
+            console.error('Error cancelling order:', error);
+            alert(`Error cancelling order: ${error.message}`);
         }
     };
 
@@ -180,9 +240,16 @@ const Portfolio = () => {
     };
 
     const renderOrders = () => {
-        if (!selectedSubaccount) return null;
+        if (ordersLoading) {
+            return (
+                <div className="loading-container">
+                    <LoadingSpinner size={30} />
+                    <p>Loading orders...</p>
+                </div>
+            );
+        }
         
-        if (!selectedSubaccount.openOrders?.length) {
+        if (!pendingOrders?.length) {
             return (
                 <div className="empty-state">
                     <div className="empty-icon">📋</div>
@@ -191,16 +258,49 @@ const Portfolio = () => {
                 </div>
             );
         }
+        
         return (
-            <div className="orders-list">
-                {selectedSubaccount.openOrders.map((order, index) => (
-                    <div key={index} className="order-item">
-                        <div className="order-symbol">{order.symbol}</div>
-                        <div className="order-type">{order.type}</div>
-                        <div className="order-price">${order.price}</div>
-                        <div className="order-status pending">Pending</div>
+            <div className="orders-content">
+                <div className="orders-header-section">
+                    <h3>Open Orders ({pendingOrders.length})</h3>
+                    <button 
+                        className="refresh-orders-btn"
+                        onClick={fetchPendingOrders}
+                        disabled={ordersLoading}
+                        title="Refresh orders"
+                    >
+                        {ordersLoading ? '⟳' : '🔄'} Refresh
+                    </button>
+                </div>
+                <div className="orders-list">
+                    <div className="orders-list-header">
+                        <div className="header-item">Market</div>
+                        <div className="header-item">Side</div>
+                        <div className="header-item">Type</div>
+                        <div className="header-item">Size</div>
+                        <div className="header-item">Price</div>
+                        <div className="header-item">Status</div>
+                        <div className="header-item"></div>
                     </div>
-                ))}
+                    {pendingOrders.map((order) => (
+                        <div key={order.id} className="order-item">
+                            <div className="order-symbol">{order.market}</div>
+                            <div className={`order-side ${order.side}`}>{order.side.toUpperCase()}</div>
+                            <div className="order-type">{order.type}</div>
+                            <div className="order-size">{order.size}</div>
+                            <div className="order-price">${order.price?.toLocaleString() || 'Market'}</div>
+                            <div className="order-status pending">Pending</div>
+                            <div className="order-actions">
+                                <button 
+                                    className="cancel-order-btn"
+                                    onClick={() => handleCancelOrder(order.id, order.market)}
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
         );
     };
@@ -354,7 +454,12 @@ const Portfolio = () => {
                             Positions
                         </button>
                         <button 
-                            onClick={() => setActiveTab('orders')} 
+                            onClick={() => {
+                                setActiveTab('orders');
+                                if (activeTab !== 'orders') {
+                                    fetchPendingOrders(); // Refresh when switching to orders tab
+                                }
+                            }} 
                             className={`tab-button ${activeTab === 'orders' ? 'active' : ''}`}
                         >
                             Orders

@@ -6,42 +6,41 @@ import OrderBook from '../../components/OrderBook';
 import TradeForm from '../../components/TradeForm';
 import EnhancedMarketHeader from '../../components/EnhancedMarketHeader';
 
-const markets = [
-  { name: 'BTC-USDC', fullName: 'Bitcoin', logo: '/bitcoin.svg', marketId: 4, symbol: 'BINANCE:BTCUSDT' },
-  { name: 'ETH-USDC', fullName: 'Ethereum', logo: '/ethereum.svg', marketId: 3, symbol: 'BINANCE:ETHUSDT' },
-  { name: 'SOL-USDC', fullName: 'Solana', logo: '/solana.svg', marketId: 5, symbol: 'BINANCE:SOLUSDT' },
-  { name: 'DOGE-USDC', fullName: 'Dogecoin', logo: '/dogecoin.svg', marketId: 6, symbol: 'BINANCE:DOGEUSDT' },
-  { name: 'ADA-USDC', fullName: 'Cardano', logo: '/cardano.svg', marketId: 7, symbol: 'BINANCE:ADAUSDT' },
-  { name: 'TSLA', fullName: 'Tesla', logo: '/tesla.svg', marketId: 8, symbol: 'NASDAQ:TSLA' },
-  { name: 'NVDA', fullName: 'Nvidia', logo: '/nvidia.svg', marketId: 9, symbol: 'NASDAQ:NVDA' },
-  { name: 'META', fullName: 'Meta', logo: '/meta.svg', marketId: 10, symbol: 'NASDAQ:META' },
+export const markets = [
+  { name: 'BTC-USDC', fullName: 'Bitcoin', logo: '/bitcoin.svg', marketId: 4 },
+  { name: 'ETH-USDC', fullName: 'Ethereum', logo: '/ethereum.svg', marketId: 3 },
+  { name: 'SOL-USDC', fullName: 'Solana', logo: '/solana.svg', marketId: 5 },
+  { name: 'DOGE-USDC', fullName: 'Dogecoin', logo: '/dogecoin.svg', marketId: 6 },
+  { name: 'ADA-USDC', fullName: 'Cardano', logo: '/cardano.svg', marketId: 7 },
+  { name: 'TSLA', fullName: 'Tesla', logo: '/tesla.svg', marketId: 8 },
+  { name: 'NVDA', fullName: 'Nvidia', logo: '/nvidia.svg', marketId: 9 },
+  { name: 'META', fullName: 'Meta', logo: '/meta.svg', marketId: 10 },
 ];
 
-const allAvailableMarkets = [
-  // Crypto
-  { name: 'BTC-USDC', fullName: 'Bitcoin', logo: '/bitcoin.svg', marketId: 4, symbol: 'BINANCE:BTCUSDT', type: 'crypto' },
-  { name: 'ETH-USDC', fullName: 'Ethereum', logo: '/ethereum.svg', marketId: 3, symbol: 'BINANCE:ETHUSDT', type: 'crypto' },
-  { name: 'SOL-USDC', fullName: 'Solana', logo: '/solana.svg', marketId: 5, symbol: 'BINANCE:SOLUSDT', type: 'crypto' },
-  { name: 'DOGE-USDC', fullName: 'Dogecoin', logo: '/dogecoin.svg', marketId: 6, symbol: 'BINANCE:DOGEUSDT', type: 'crypto' },
-  { name: 'ADA-USDC', fullName: 'Cardano', logo: '/cardano.svg', marketId: 7, symbol: 'BINANCE:ADAUSDT', type: 'crypto' },
+export const allAvailableMarkets = [
+  { name: 'BTC-USDC', fullName: 'Bitcoin', logo: '/bitcoin.svg', marketId: 4, type: 'crypto' },
+  { name: 'ETH-USDC', fullName: 'Ethereum', logo: '/ethereum.svg', marketId: 3, type: 'crypto' },
+  { name: 'SOL-USDC', fullName: 'Solana', logo: '/solana.svg', marketId: 5, type: 'crypto' },
+  { name: 'DOGE-USDC', fullName: 'Dogecoin', logo: '/dogecoin.svg', marketId: 6, type: 'crypto' },
+  { name: 'ADA-USDC', fullName: 'Cardano', logo: '/cardano.svg', marketId: 7, type: 'crypto' },
   
   // Stocks
-  { name: 'TSLA', fullName: 'Tesla', logo: '/tesla.svg', marketId: 8, symbol: 'NASDAQ:TSLA', type: 'stock' },
-  { name: 'NVDA', fullName: 'Nvidia', logo: '/nvidia.svg', marketId: 9, symbol: 'NASDAQ:NVDA', type: 'stock' },
-  { name: 'META', fullName: 'Meta', logo: '/meta.svg', marketId: 10, symbol: 'NASDAQ:META', type: 'stock' },
-  { name: 'PLTR', fullName: 'Palantir', logo: '/palantir.svg', marketId: 11, symbol: 'NYSE:PLTR', type: 'stock' },
-  { name: 'SNOW', fullName: 'Snowflake', logo: '/snowflake.svg', marketId: 12, symbol: 'NYSE:SNOW', type: 'stock' },
-  { name: 'UBER', fullName: 'Uber', logo: '/uber.svg', marketId: 13, symbol: 'NYSE:UBER', type: 'stock' },
-  { name: 'HOOD', fullName: 'Robinhood', logo: '/robinhood.svg', marketId: 14, symbol: 'NASDAQ:HOOD', type: 'stock' },
-  { name: 'ABNB', fullName: 'Airbnb', logo: '/airbnb.svg', marketId: 15, symbol: 'NASDAQ:ABNB', type: 'stock' },
+  { name: 'TSLA', fullName: 'Tesla', logo: '/tesla.svg', marketId: 8, type: 'stock' },
+  { name: 'NVDA', fullName: 'Nvidia', logo: '/nvidia.svg', marketId: 9, type: 'stock' },
+  { name: 'META', fullName: 'Meta', logo: '/meta.svg', marketId: 10, type: 'stock' },
+  { name: 'PLTR', fullName: 'Palantir', logo: '/palantir.svg', marketId: 11, type: 'stock' },
+  { name: 'SNOW', fullName: 'Snowflake', logo: '/snowflake.svg', marketId: 12, type: 'stock' },
+  { name: 'UBER', fullName: 'Uber', logo: '/uber.svg', marketId: 13, type: 'stock' },
+  { name: 'HOOD', fullName: 'Robinhood', logo: '/robinhood.svg', marketId: 14, type: 'stock' },
+  { name: 'ABNB', fullName: 'Airbnb', logo: '/airbnb.svg', marketId: 15, type: 'stock' },
 ];
 
 const marketSymbolMap = {
-  'BTC-USDC': 'BTC-USD',
-  'ETH-USDC': 'ETH-USD',
-  'SOL-USDC': 'SOL-USD',
-  'DOGE-USDC': 'DOGE-USD',
-  'ADA-USDC': 'ADA-USD',
+  'BTC-USDC': 'BTCUSD',
+  'ETH-USDC': 'ETHUSD',
+  'SOL-USDC': 'SOLUSD',
+  'DOGE-USDC': 'DOGEUSD',
+  'ADA-USDC': 'ADAUSD',
   'TSLA': 'TSLA',
   'NVDA': 'NVDA',
   'META': 'META',
@@ -199,7 +198,9 @@ const TradePage = ({ selectedMarket: propSelectedMarket }) => {
               <EnhancedMarketHeader selectedMarket={selectedMarket} />
             </div>
             <div style={styles.chartContainer}>
-              <Chart selectedMarket={selectedMarket} />
+              <Chart
+                market={marketSymbolMap[selectedMarket.name] || selectedMarket.name}
+              />
             </div>
           </div>
           <div style={styles.orderBookContainer} className="orderbook-container">

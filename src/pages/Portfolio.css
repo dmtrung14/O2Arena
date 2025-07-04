@@ -896,8 +896,66 @@
 }
 
 /* ===========================================
-   CLEAN ORDERS TABLE STYLING
+   ORDERS SECTION STYLING
    =========================================== */
+
+.orders-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.orders-header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 4px;
+}
+
+.orders-header-section h3 {
+    color: #fff;
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
+    background: linear-gradient(135deg, #fff 0%, #c9d1d9 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.refresh-orders-btn {
+    background: linear-gradient(135deg, 
+        rgba(46, 189, 133, 0.1) 0%, 
+        rgba(46, 189, 133, 0.05) 100%
+    );
+    border: 1px solid rgba(46, 189, 133, 0.3);
+    border-radius: 4px;
+    color: #2EBD85;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.refresh-orders-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, 
+        rgba(46, 189, 133, 0.2) 0%, 
+        rgba(46, 189, 133, 0.1) 100%
+    );
+    border-color: rgba(46, 189, 133, 0.5);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(46, 189, 133, 0.2);
+}
+
+.refresh-orders-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
 
 .orders-list {
     background: linear-gradient(145deg, 
@@ -918,8 +976,8 @@
 /* Clean Orders Header */
 .orders-list-header {
     display: grid;
-    grid-template-columns: 2fr 1.5fr 1.5fr 1fr;
-    gap: 20px;
+    grid-template-columns: 1.2fr 1fr 1fr 1fr 1.2fr 0.8fr 1fr;
+    gap: 16px;
     align-items: center;
     padding: 20px 24px;
     background: rgba(13, 17, 23, 0.8);
@@ -934,13 +992,12 @@
 /* Simple Order Row Styling */
 .order-item {
     display: grid;
-    grid-template-columns: 2fr 1.5fr 1.5fr 1fr;
-    gap: 20px;
+    grid-template-columns: 1.2fr 1fr 1fr 1fr 1.2fr 0.8fr 1fr;
+    gap: 16px;
     align-items: center;
     padding: 16px 24px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     transition: all 0.2s ease;
-    cursor: pointer;
 }
 
 .order-item:hover {
@@ -969,6 +1026,31 @@
     letter-spacing: 0.3px;
 }
 
+.order-side {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    padding: 3px 8px;
+    border-radius: 3px;
+    text-align: center;
+    white-space: nowrap;
+    width: fit-content;
+    display: inline-block;
+}
+
+.order-side.buy {
+    color: #2EBD85;
+    background: rgba(46, 189, 133, 0.1);
+    border: 1px solid rgba(46, 189, 133, 0.2);
+}
+
+.order-side.sell {
+    color: #f85149;
+    background: rgba(248, 81, 73, 0.1);
+    border: 1px solid rgba(248, 81, 73, 0.2);
+}
+
 .order-type {
     font-size: 13px;
     font-weight: 600;
@@ -976,32 +1058,82 @@
     text-transform: uppercase;
 }
 
+.order-size {
+    font-family: 'SF Mono', Monaco, 'Roboto Mono', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    color: #c9d1d9;
+}
+
 .order-price {
     font-family: 'SF Mono', Monaco, 'Roboto Mono', monospace;
     font-size: 14px;
     font-weight: 600;
     color: #c9d1d9;
-    text-align: right;
 }
 
 .order-status {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
     text-align: center;
+    padding: 3px 8px;
+    border-radius: 3px;
+    width: fit-content;
+    display: inline-block;
 }
 
 .order-status.pending {
     color: #f39c12;
+    background: rgba(243, 156, 18, 0.1);
+    border: 1px solid rgba(243, 156, 18, 0.2);
 }
 
 .order-status.filled {
     color: #2EBD85;
+    background: rgba(46, 189, 133, 0.1);
+    border: 1px solid rgba(46, 189, 133, 0.2);
 }
 
 .order-status.cancelled {
     color: #8b949e;
+    background: rgba(139, 148, 158, 0.1);
+    border: 1px solid rgba(139, 148, 158, 0.2);
+}
+
+.order-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.cancel-order-btn {
+    background: linear-gradient(135deg, 
+        rgba(248, 81, 73, 0.1) 0%, 
+        rgba(248, 81, 73, 0.05) 100%
+    );
+    border: 1px solid rgba(248, 81, 73, 0.3);
+    border-radius: 3px;
+    color: #f85149;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 8px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    text-transform: uppercase;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+}
+
+.cancel-order-btn:hover {
+    background: linear-gradient(135deg, 
+        rgba(248, 81, 73, 0.2) 0%, 
+        rgba(248, 81, 73, 0.1) 100%
+    );
+    border-color: rgba(248, 81, 73, 0.5);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(248, 81, 73, 0.2);
 }
 
 /* ===========================================
@@ -1064,6 +1196,22 @@
     .orders-list-header {
         display: none; /* Hide headers on mobile for cleaner look */
     }
+
+    .orders-header-section {
+        flex-direction: column;
+        gap: 12px;
+        align-items: stretch;
+    }
+
+    .orders-header-section h3 {
+        text-align: center;
+        font-size: 16px;
+    }
+
+    .refresh-orders-btn {
+        align-self: center;
+        width: fit-content;
+    }
     
     .history-list,
     .orders-list {
@@ -1103,10 +1251,41 @@
     }
     
     .order-status,
+    .order-size,
     .position-pnl {
         font-size: 12px;
         text-align: left;
         margin: 4px 0;
+    }
+
+    .order-item {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+        background: rgba(22, 27, 34, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        margin-bottom: 12px;
+        padding: 16px;
+    }
+
+    .order-item:hover {
+        background: rgba(46, 189, 133, 0.05);
+    }
+
+    .order-side,
+    .order-status {
+        width: fit-content;
+        align-self: flex-start;
+    }
+
+    .order-actions {
+        justify-content: flex-start;
+    }
+
+    .cancel-order-btn {
+        width: fit-content;
+        margin-top: 8px;
     }
 
     .tab-button {
