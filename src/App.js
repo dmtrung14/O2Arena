@@ -84,69 +84,12 @@ const allAvailableMarkets = [
   { name: 'ABNB', logo: '/airbnb.svg', marketId: 15, symbol: 'NASDAQ:ABNB', type: 'stock' },
 ];
 
-function PageTitleManager({ selectedMarket }) {
-  const location = useLocation();
-  const [currentPrice, setCurrentPrice] = useState(null);
-
-  useEffect(() => {
-    const fetchPrice = async () => {
-      if (!selectedMarket) return;
-      try {
-        const response = await fetch(`https://zo-devnet.n1.xyz/orderbook?market_id=${selectedMarket.marketId}`);
-        const data = await response.json();
-        if (data.asks && data.asks.length > 0) {
-          const price = data.asks[0][0];
-          setCurrentPrice(price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-        }
-      } catch (error) {
-        console.error('Error fetching price:', error);
-      }
-    };
-
-    let interval;
-    if (location.pathname === '/trade') {
-      fetchPrice();
-      interval = setInterval(fetchPrice, 2000);
-    } else {
-      setCurrentPrice(null);
-    }
-
-    return () => clearInterval(interval);
-  }, [location.pathname, selectedMarket]);
-
-  useEffect(() => {
-    switch (location.pathname) {
-      case '/':
-        document.title = 'Oxygen Sandbox';
-        break;
-      case '/markets':
-        document.title = 'O2 | Markets';
-        break;
-      case '/portfolio':
-        document.title = 'O2 | Portfolio';
-        break;
-      case '/trade':
-        if (currentPrice && selectedMarket) {
-          document.title = `$${currentPrice} | ${selectedMarket.name}`;
-        } else if (selectedMarket) {
-          document.title = selectedMarket.name;
-        }
-        break;
-      default:
-        document.title = 'O2 Arena';
-    }
-  }, [location.pathname, currentPrice, selectedMarket]);
-
-  return null;
-}
-
 function App() {
   const [selectedMarket, setSelectedMarket] = useState(markets[0]);
 
   return (
     <Router>
       <AuthProvider>
-        <PageTitleManager selectedMarket={selectedMarket} />
         <div className="app">
           <Routes>
             <Route path="/" element={<LandingPage />} />

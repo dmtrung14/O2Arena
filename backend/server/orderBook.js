@@ -1,13 +1,5 @@
-const fs = require('fs');
-const path = require('path');
 const { OrderBook } = require('nodejs-order-book');
-const db = process.env.DATABASE_URL ? require('./db') : null;
-const fetch = require('node-fetch');
-
-const DATA_DIR = path.join(__dirname, 'data');
-if (!process.env.DATABASE_URL) {
-  if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
-}
+const yahooFinance = require('yahoo-finance2').default;
 
 // Support multiple markets
 const SUPPORTED_MARKETS = {
@@ -49,82 +41,22 @@ const MARKET_ID_MAP = {
 
 // Store order books for each market
 const orderBooks = new Map();
-const marketReady = new Map();
+let basePrices = {};
 
-function snapshotPath(market) {
-  return path.join(DATA_DIR, `${market}-snapshot.json`);
-}
-
-function journalPath(market) {
-  return path.join(DATA_DIR, `${market}-journal.json`);
-}
-
-async function loadJsonSafely(filePath, market) {
-  try {
-    if (process.env.DATABASE_URL) {
-      const snap = await db.loadSnapshot(market);
-      return snap;
-    } else {
-      if (fs.existsSync(filePath)) {
-        const raw = fs.readFileSync(filePath, 'utf8');
-        return JSON.parse(raw);
-      }
-    }
-  } catch (err) {
-    console.error(`Failed to load ${filePath}:`, err);
-  }
-  return null;
-}
-
-async function persistJson(filePath, obj, market) {
-  try {
-    if (process.env.DATABASE_URL) {
-      await db.saveSnapshot(market, obj);
-    } else {
-      fs.writeFileSync(filePath, JSON.stringify(obj));
-    }
-  } catch (err) {
-    console.error(`Failed to write ${filePath}:`, err);
-  }
-}
-
-async function initMarket(market) {
-  let lastSnapshot = null;
-  let lastJournal = [];
-
-  if (process.env.DATABASE_URL) {
-    await db.init();
-    lastSnapshot = await db.loadSnapshot(market);
-    lastJournal = await db.loadJournal(market);
-  } else {
-    lastSnapshot = await loadJsonSafely(snapshotPath(market), market);
-    lastJournal = (await loadJsonSafely(journalPath(market), market)) || [];
-  }
-
-  // Create OrderBook for this market
-  const ob = new OrderBook({
-    snapshot: lastSnapshot || undefined,
-    journal: lastJournal,
-    enableJournaling: true,
-  });
-
+function initMarket(market) {
+  const ob = new OrderBook();
   orderBooks.set(market, ob);
-  marketReady.set(market, true);
   
   console.log(`[OrderBook] Initialized market: ${market}`);
   
-  // Add some initial mock liquidity for demonstration
-  await addMockLiquidity(market);
+  addMockLiquidity(market);
   
   return ob;
 }
 
-async function addMockLiquidity(market) {
-  const ob = orderBooks.get(market);
-  if (!ob) return;
-  
-  // Get approximate price for each market
-  const basePrices = {
+async function fetchBasePrices() {
+  // Start with a set of fallback prices.
+  const prices = {
     // Crypto markets
     'BTC-USDC': 100000,
     'ETH-USDC': 3500,
@@ -141,6 +73,44 @@ async function addMockLiquidity(market) {
     'HOOD': 25,
     'ABNB': 160
   };
+
+  const symbolsToFetch = Object.keys(SUPPORTED_MARKETS);
+  const yahooSymbols = symbolsToFetch.map(s => {
+    if (s.includes('-')) return s.replace('-USDC', '-USD');
+    return s;
+  });
+
+  // Create a reverse map to reliably associate results with our internal symbols.
+  const yahooToInternalSymbolMap = {};
+  for (let i = 0; i < symbolsToFetch.length; i++) {
+    yahooToInternalSymbolMap[yahooSymbols[i]] = symbolsToFetch[i];
+  }
+
+  try {
+    console.log('[OrderBook] Fetching prices from Yahoo Finance for symbols:', yahooSymbols);
+    const quotes = await yahooFinance.quote(yahooSymbols);
+    // Ensure we're always working with an array.
+    const quotesArray = Array.isArray(quotes) ? quotes : [quotes];
+
+    for (const quote of quotesArray) {
+      if (quote && quote.regularMarketPrice) {
+        const internalSymbol = yahooToInternalSymbolMap[quote.symbol];
+        if (internalSymbol) {
+          prices[internalSymbol] = quote.regularMarketPrice;
+          console.log(`[OrderBook] Fetched price for ${internalSymbol}: ${quote.regularMarketPrice}`);
+        }
+      }
+    }
+  } catch (error) {
+    console.error('[OrderBook] Failed to fetch prices from Yahoo Finance. Using only fallback data.', error.message);
+  }
+
+  return prices;
+}
+
+function addMockLiquidity(market) {
+  const ob = orderBooks.get(market);
+  if (!ob) return;
   
   const basePrice = basePrices[market] || 100;
   const spread = basePrice * 0.001; // 0.1% spread
@@ -153,7 +123,7 @@ async function addMockLiquidity(market) {
     const size = Math.random() * 5 + 0.1;
     
     try {
-      await placeOrder(market, {
+      placeOrder(market, {
         id: `MOCK-BID-${market}-${i}-${Date.now()}`,
         side: 'buy',
         price: price,
@@ -171,7 +141,7 @@ async function addMockLiquidity(market) {
     const size = Math.random() * 5 + 0.1;
     
     try {
-      await placeOrder(market, {
+      placeOrder(market, {
         id: `MOCK-ASK-${market}-${i}-${Date.now()}`,
         side: 'sell',
         price: price,
@@ -186,48 +156,16 @@ async function addMockLiquidity(market) {
 
 // Initialize all supported markets
 const ready = (async () => {
+  console.log('[OrderBook] Fetching initial prices...');
+  basePrices = await fetchBasePrices();
   console.log('[OrderBook] Initializing all markets...');
   for (const market of Object.keys(SUPPORTED_MARKETS)) {
-    await initMarket(market);
+    initMarket(market);
   }
   console.log('[OrderBook] All markets initialized');
 })();
 
-// Helper to persist log after each operation
-async function persistLog(market, log) {
-  if (!log) return;
-  if (process.env.DATABASE_URL) {
-    await db.appendLog(market, log);
-  } else {
-    const current = (await loadJsonSafely(journalPath(market), market)) || [];
-    if (!Array.isArray(current)) {
-      console.warn(`[OrderBook] journal file corrupted for ${market}, resetting`);
-      await persistJson(journalPath(market), [], market);
-      current.length = 0;
-    }
-    current.push(log);
-    await persistJson(journalPath(market), current, market);
-  }
-}
-
-// Helper to decide when to snapshot (every 100 ops per market)
-const opCounters = new Map();
-
-async function maybeSnapshot(market) {
-  const count = (opCounters.get(market) || 0) + 1;
-  opCounters.set(market, count);
-  
-  if (count % 100 === 0) {
-    console.log(`[OrderBook] Taking snapshot for ${market} after ${count} ops`);
-    const ob = orderBooks.get(market);
-    if (ob) {
-      await persistJson(snapshotPath(market), ob.snapshot(), market);
-    }
-  }
-}
-
-// Define placeOrder as a local function so it can be used internally
-async function placeOrder(market, params) {
+function placeOrder(market, params) {
   const ob = orderBooks.get(market);
   if (!ob) {
     throw new Error(`Market ${market} not supported`);
@@ -245,117 +183,12 @@ async function placeOrder(market, params) {
       throw new Error(`Unsupported order type ${type}`);
     }
     
-    await persistLog(market, result.log);
-    await maybeSnapshot(market);
     return result;
   } catch (err) {
     console.error(`[OrderBook] placeOrder error for ${market}`, err);
     throw err;
   }
 }
-
-// Helper to map our market symbol to Yahoo Finance symbol
-function getYahooSymbol(market) {
-  const map = {
-    'BTC-USDC': 'BTC-USD',
-    'ETH-USDC': 'ETH-USD',
-    'SOL-USDC': 'SOL-USD',
-    'DOGE-USDC': 'DOGE-USD',
-    'ADA-USDC': 'ADA-USD',
-    'TSLA': 'TSLA',
-    'NVDA': 'NVDA',
-    'META': 'META',
-    'PLTR': 'PLTR',
-    'SNOW': 'SNOW',
-    'UBER': 'UBER',
-    'HOOD': 'HOOD',
-    'ABNB': 'ABNB',
-  };
-  return map[market] || market;
-}
-
-// Fetch latest price from Yahoo Finance
-async function fetchYahooPrice(market) {
-  const symbol = getYahooSymbol(market);
-  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1m&range=1d`;
-  try {
-    const res = await fetch(url, {
-      headers: { 'User-Agent': 'Mozilla/5.0' }
-    });
-    const data = await res.json();
-    const result = data.chart?.result?.[0];
-    if (!result) return null;
-    const price = result.meta?.regularMarketPrice || result.meta?.previousClose || null;
-    return price;
-  } catch (err) {
-    console.error(`[OrderBook] Failed to fetch Yahoo price for ${market}:`, err);
-    return null;
-  }
-}
-
-// Random walk state for each market
-const randomWalkState = {};
-
-// Simulate a random walk around the real price
-function randomWalkPrice(market, realPrice) {
-  if (!randomWalkState[market]) {
-    randomWalkState[market] = realPrice;
-    return realPrice;
-  }
-  // Walk by up to ±0.2% per step
-  const maxStep = realPrice * 0.002;
-  const step = (Math.random() - 0.5) * 2 * maxStep;
-  let newPrice = randomWalkState[market] + step;
-  // Clamp to ±2% of real price
-  const min = realPrice * 0.98;
-  const max = realPrice * 1.02;
-  newPrice = Math.max(min, Math.min(max, newPrice));
-  randomWalkState[market] = newPrice;
-  return newPrice;
-}
-
-// Periodically update the order book with random walk prices
-async function updateOrderBooksWithRandomWalk() {
-  for (const market of Object.keys(SUPPORTED_MARKETS)) {
-    // Only update if not using real exchange feed
-    if (process.env.ENABLE_BINANCE === 'true' || process.env.ENABLE_COINBASE === 'true') continue;
-    const ob = orderBooks.get(market);
-    if (!ob) continue;
-    const realPrice = await fetchYahooPrice(market);
-    if (!realPrice) continue;
-    // Clear existing mock orders
-    ob.clear();
-    const spread = realPrice * 0.001; // 0.1% spread
-    // Add bid levels
-    for (let i = 1; i <= 10; i++) {
-      const price = randomWalkPrice(market, realPrice) - (spread * i);
-      const size = Math.random() * 5 + 0.1;
-      await placeOrder(market, {
-        id: `RW-BID-${market}-${i}-${Date.now()}`,
-        side: 'buy',
-        price: price,
-        size: size,
-        type: 'limit'
-      });
-    }
-    // Add ask levels
-    for (let i = 1; i <= 10; i++) {
-      const price = randomWalkPrice(market, realPrice) + (spread * i);
-      const size = Math.random() * 5 + 0.1;
-      await placeOrder(market, {
-        id: `RW-ASK-${market}-${i}-${Date.now()}`,
-        side: 'sell',
-        price: price,
-        size: size,
-        type: 'limit'
-      });
-    }
-    console.log(`[OrderBook] Updated ${market} with random walk around $${realPrice}`);
-  }
-}
-
-// Start periodic update every 5 seconds
-setInterval(updateOrderBooksWithRandomWalk, 5000);
 
 // Public API
 module.exports = {
@@ -366,17 +199,13 @@ module.exports = {
   
   placeOrder,
   
-  async cancelOrder(market, id) {
+  cancelOrder(market, id) {
     const ob = orderBooks.get(market);
     if (!ob) {
       throw new Error(`Market ${market} not supported`);
     }
     
     const removed = ob.cancel(id);
-    if (removed && removed.log) {
-      await persistLog(market, removed.log);
-      await maybeSnapshot(market);
-    }
     return removed;
   },
   

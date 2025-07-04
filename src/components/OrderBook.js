@@ -195,12 +195,6 @@ function OrderBook({ selectedMarket }) {
           <button className={activeTab === 'trades' ? 'active' : ''} onClick={() => setActiveTab('trades')}>
             Trades
           </button>
-          <div className="connection-status">
-            <span className={`status-indicator ${connectionStatus.includes('Connected') || connectionStatus.includes('Live') ? 'connected' : 'disconnected'}`}>
-              ●
-            </span>
-            <span className="status-text">{connectionStatus}</span>
-          </div>
         </div>
         
         {activeTab === 'orderbook' && (
@@ -258,38 +252,54 @@ function OrderBook({ selectedMarket }) {
                     ))}
                   </ul>
                 </div>
+                
+                <div className="connection-status">
+                  <span className={`status-indicator ${connectionStatus.includes('Connected') || connectionStatus.includes('Live') ? 'connected' : 'disconnected'}`}>
+                    ●
+                  </span>
+                  <span className="status-text">{connectionStatus}</span>
+                </div>
               </>
             )}
           </>
         )}
         
         {activeTab === 'trades' && (
-          <div className="trades-list">
-            <div className="table-header">
-              <span className="trade-price">Price</span>
-              <span className="trade-arrow"></span>
-              <span className="trade-size">Size ({selectedMarket?.name?.split('-')[0] || 'BTC'})</span>
-              <span className="trade-time">Time</span>
-            </div>
-            <ul>
-              {trades.length === 0 ? (
-                <li className="no-trades">
-                  <span>No recent trades</span>
-                </li>
-              ) : (
-                trades.map((trade, index) => (
-                  <li key={index} className={trade.takerSide === 'bid' ? 'trade-buy' : 'trade-sell'}>
-                    <span className="trade-price">
-                      {(trade.price / 10).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
-                    </span>
-                    <span className="trade-arrow">{trade.takerSide === 'bid' ? '↑' : '↓'}</span>
-                    <span className="trade-size">{(trade.baseSize / 100000).toLocaleString('en-US', {minimumFractionDigits: 5, maximumFractionDigits: 5})}</span>
-                    <span className="trade-time">{new Date(trade.time).toLocaleTimeString()}</span>
+          <>
+            <div className="trades-list">
+              <div className="table-header">
+                <span className="trade-price">Price</span>
+                <span className="trade-arrow"></span>
+                <span className="trade-size">Size ({selectedMarket?.name?.split('-')[0] || 'BTC'})</span>
+                <span className="trade-time">Time</span>
+              </div>
+              <ul>
+                {trades.length === 0 ? (
+                  <li className="no-trades">
+                    <span>No recent trades</span>
                   </li>
-                ))
-              )}
-            </ul>
-          </div>
+                ) : (
+                  trades.map((trade, index) => (
+                    <li key={index} className={trade.takerSide === 'bid' ? 'trade-buy' : 'trade-sell'}>
+                      <span className="trade-price">
+                        {(trade.price / 10).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                      </span>
+                      <span className="trade-arrow">{trade.takerSide === 'bid' ? '↑' : '↓'}</span>
+                      <span className="trade-size">{(trade.baseSize / 100000).toLocaleString('en-US', {minimumFractionDigits: 5, maximumFractionDigits: 5})}</span>
+                      <span className="trade-time">{new Date(trade.time).toLocaleTimeString()}</span>
+                    </li>
+                  ))
+                )}
+              </ul>
+            </div>
+            
+            <div className="connection-status">
+              <span className={`status-indicator ${connectionStatus.includes('Connected') || connectionStatus.includes('Live') ? 'connected' : 'disconnected'}`}>
+                ●
+              </span>
+              <span className="status-text">{connectionStatus}</span>
+            </div>
+          </>
         )}
     </div>
   );

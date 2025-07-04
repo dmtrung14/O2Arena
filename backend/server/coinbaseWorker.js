@@ -85,7 +85,6 @@ function start() {
   ws.on('message', async (raw) => {
     try {
       const msg = JSON.parse(raw);
-      console.log('[CoinbaseWorker] Received message:', msg.type, JSON.stringify(msg).slice(0, 200));
       if (msg.type === 'snapshot') {
         lastUpdate = Date.now();
         for (const [price, size] of msg.bids) {

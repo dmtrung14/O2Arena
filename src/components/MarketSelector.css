@@ -1,18 +1,20 @@
 .market-selector-container {
     position: relative;
     color: #fff;
-    border-bottom: 1px solid #2a2e39;
     font-family: 'Open Sans', sans-serif;
-    background-color: #000;
-    width: 100%;
+    background-color: #10131a;
+    width: auto;
+    display: flex;
+    height: 100%;
+    border-right: 1px solid #2a2e39;
 }
 
 .market-selector-header {
     display: flex;
     align-items: stretch;
     padding: 0 15px;
-    background-color: #0D0E12;
-    border-bottom: 1px solid #2a2e39;
+    background-color: #10131a;
+    height: 100%;
 }
 
 .market-identity {
@@ -20,7 +22,7 @@
     align-items: center;
     cursor: pointer;
     padding-right: 20px;
-    border-right: 1px solid #2a2e39;
+    height: 100%;
 }
 
 .market-metrics {
@@ -190,6 +192,23 @@
     cursor: pointer;
     transition: background-color 0.2s ease;
     justify-content: space-between;
+}
+
+.market-item-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.market-item-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #fff;
+}
+
+.market-full-name {
+    font-size: 14px;
+    color: #8b949e;
 }
 
 .market-item:hover {

@@ -20,13 +20,15 @@
 }
 
 .connection-status {
-  position: absolute;
-  right: 10px;
   display: flex;
   align-items: center;
   gap: 5px;
   font-size: 0.7rem;
   color: #848E9C;
+  padding: 8px 10px;
+  border-top: 1px solid #2A2E39;
+  background: #000000;
+  flex-shrink: 0;
 }
 
 .status-indicator {

@@ -1,45 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import './MarketSelector.css';
 
 const MarketSelector = ({ markets, allMarkets, selectedMarket, onMarketChange }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [marketStats, setMarketStats] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('All');
   const wrapperRef = useRef(null);
-
-  useEffect(() => {
-    const fetchMarketStats = async () => {
-      try {
-        const response = await fetch('https://zo-devnet.n1.xyz/stats');
-        const data = await response.json();
-        const marketData = data.markets.find(m => m.marketId === selectedMarket.marketId);
-
-        if (marketData) {
-          const change = marketData.indexPrice[0] - marketData.perpStats.mark_price;
-          const changePercent = (change / marketData.perpStats.mark_price) * 100;
-
-          setMarketStats({
-            price: marketData.indexPrice[0],
-            volume24h: marketData.volume24h * marketData.indexPrice[0],
-            change24h: changePercent,
-            openInterest: marketData.perpStats.open_interest * marketData.indexPrice[0],
-            fundingRate: marketData.perpStats.funding_rate,
-          });
-        }
-      } catch (error) {
-        console.error("Failed to fetch market stats:", error);
-      }
-    };
-
-    fetchMarketStats();
-    const interval = setInterval(fetchMarketStats, 5000); // Refresh every 5 seconds
-    return () => clearInterval(interval);
-  }, [selectedMarket]);
-
-  const fundingRate = marketStats ? marketStats.fundingRate : 0;
-  const bidPercentage = 50 * (1 - fundingRate);
-  const askPercentage = 50 * (1 + fundingRate);
 
   const handleToggle = () => {
     setIsOpen(!isOpen);
@@ -48,7 +14,6 @@ const MarketSelector = ({ markets, allMarkets, selectedMarket, onMarketChange })
 
   const handleSelectMarket = (market) => {
     onMarketChange(market);
-    setMarketStats(null);
     setIsOpen(false);
     setSearchQuery('');
   };
@@ -89,7 +54,7 @@ const MarketSelector = ({ markets, allMarkets, selectedMarket, onMarketChange })
     return markets; // Original featured markets for quick selection
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     function handleClickOutside(event) {
       if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
         setIsOpen(false);
@@ -114,46 +79,6 @@ const MarketSelector = ({ markets, allMarkets, selectedMarket, onMarketChange })
           <img src={selectedMarket.logo} alt={`${selectedMarket.name} logo`} className="market-logo" />
           <span className="market-name">{selectedMarket.name}</span>
         </div>
-        {marketStats ? (
-          <div className="market-metrics">
-            <div className="metric-item">
-              <div className={`metric-value ${marketStats.change24h >= 0 ? 'green' : 'red'}`}>
-                ${marketStats.price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
-              </div>
-              <div className="metric-label">{selectedMarket.name.split('-')[0]} Price</div>
-            </div>
-            <div className="metric-item">
-              <div className={`metric-value ${marketStats.change24h >= 0 ? 'green' : 'red'}`}>
-                {marketStats.change24h >= 0 ? '+' : ''}{marketStats.change24h.toFixed(2)}%
-              </div>
-              <div className="metric-label">24h Change</div>
-            </div>
-            <div className="metric-item">
-              <div className="metric-value">
-                ${marketStats.openInterest.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
-              </div>
-              <div className="metric-label">Open Interest</div>
-            </div>
-            <div className="metric-item">
-              <div className="metric-value">
-                ${marketStats.volume24h.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
-              </div>
-              <div className="metric-label">24h Volume</div>
-            </div>
-            <div className="metric-item">
-              <div className="metric-value">
-                  <span className="green">{bidPercentage.toFixed(1)}%</span>
-                  <div className="bid-ask-ratio-bar">
-                      <div className="bid-ratio-fill" style={{width: `${bidPercentage}%`}}></div>
-                  </div>
-                  <span className="red">{askPercentage.toFixed(1)}%</span>
-              </div>
-              <div className="metric-label">Bid - Ask Ratio</div>
-            </div>
-          </div>
-        ) : (
-          <div className="market-metrics">Loading...</div>
-        )}
       </div>
       {isOpen && (
         <div className="market-dropdown">
@@ -186,7 +111,6 @@ const MarketSelector = ({ markets, allMarkets, selectedMarket, onMarketChange })
               Stocks
             </span>
           </div>
-          
           <div className="market-list">
             {/* Quick Selection Section */}
             {!searchQuery.trim() && (
@@ -198,41 +122,30 @@ const MarketSelector = ({ markets, allMarkets, selectedMarket, onMarketChange })
                     className="market-item"
                     onClick={() => handleSelectMarket(market)}
                   >
-                    <img src={market.logo} alt={`${market.name} logo`} className="market-logo" />
-                    <span className="market-name-dropdown">{market.name}</span>
-                    <span className="market-type-badge">Featured</span>
+                    <div className="market-item-left">
+                      <img src={market.logo} alt={market.name} className="market-logo" />
+                      <span className="market-item-name">{market.name}</span>
+                    </div>
+                    {market.fullName && <span className="market-full-name">{market.fullName}</span>}
                   </div>
                 ))}
-                <div className="market-section-divider"></div>
               </>
             )}
-            
-            {/* All Markets Section */}
-            {(searchQuery.trim() || allMarkets) && (
-              <>
-                {!searchQuery.trim() && <div className="market-section-header">All Markets</div>}
-                {getFilteredMarkets().map((market) => (
-                  <div
-                    key={`all-${market.name}`}
-                    className="market-item"
-                    onClick={() => handleSelectMarket(market)}
-                  >
-                    <img src={market.logo} alt={`${market.name} logo`} className="market-logo" />
-                    <span className="market-name-dropdown">{market.name}</span>
-                    {market.type && (
-                      <span className={`market-type-badge ${market.type}`}>
-                        {market.type.charAt(0).toUpperCase() + market.type.slice(1)}
-                      </span>
-                    )}
-                  </div>
-                ))}
-                {getFilteredMarkets().length === 0 && searchQuery.trim() && (
-                  <div className="no-results">
-                    No markets found for "{searchQuery}"
-                  </div>
-                )}
-              </>
-            )}
+            {/* Filtered Markets Section */}
+            <div className="market-section-header">All Markets</div>
+            {getFilteredMarkets().map((market) => (
+              <div
+                key={market.name}
+                className="market-item"
+                onClick={() => handleSelectMarket(market)}
+              >
+                <div className="market-item-left">
+                  <img src={market.logo} alt={market.name} className="market-logo" />
+                  <span className="market-item-name">{market.name}</span>
+                </div>
+                {market.fullName && <span className="market-full-name">{market.fullName}</span>}
+              </div>
+            ))}
           </div>
         </div>
       )}
